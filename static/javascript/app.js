@@ -1,26 +1,32 @@
-$(document).ready(function() {
+$(document).ready(function () {
 
     var CLUBS = "C", HEARTS = "H", DIAMONDS = "D", SPADES = "S", JOKER = "J";
     var QUEEN = "Q", JACK = "J", KING = "K", ACE = "A";
+    var COMPUTER = "computer", PLAYER = "player";
 
     var Suite = JS.Class({
-        construct: function(symbol, title) {
+        construct:function (symbol, title) {
             this.symbol = symbol;
             this.title = title;
         },
 
-        symbolChar: function() {
+        additionalClass: function() {
+            var color = "";
+            if (this.symbol == DIAMONDS || this.symbol == HEARTS)
+                color = " red";
+            return color;
+        },
+
+        symbolChar:function () {
             var _symbolChar = "\u00a0";
             switch (this.symbol) {
                 case CLUBS :
                     _symbolChar = "\u2663";
                     break;
                 case DIAMONDS :
-//                    frontNode.className += " red";
                     _symbolChar = "\u2666";
                     break;
                 case HEARTS :
-//                    frontNode.className += " red";
                     _symbolChar = "\u2665";
                     break;
                 case SPADES :
@@ -31,17 +37,80 @@ $(document).ready(function() {
         }
     });
 
-    var Player = JS.Class({
-        construct: function(name, gender) {
-            this.name = name;
-            this.gender = gender;
+
+    var Hand = JS.Class({
+        construct:function (type) {
+            this.cards = [];
+            this.hidden = type != PLAYER
+            this.card_container = document.getElementById(type + "-deck");
+
+            while (this.card_container.firstChild != null) {
+                this.card_container.removeChild(this.card_container.firstChild);
+            }
+        },
+
+        /**
+         * Different factors for players and computers, so that the cards are stacked closer for
+         * the non-players
+         */
+        stackFactor: function() {
+            if (this.hidden)
+                return [0.25, 0.0625];
+            else
+                return [1.0, 0.25];
+        },
+
+        add:function (card) {
+            this.cards.push(card);
+            var numCards = this.cards.length;
+            var left = this.stackFactor()[0] * numCards;
+            var top = this.stackFactor()[1] * numCards;
+
+            var node = card.buildNode();
+            if (!this.hidden) {
+
+            }
+            if (this.hidden)
+                node.firstChild.style.visibility = "hidden";
+            node.style.left = left + "em";
+            node.style.top = top + "em";
+
+            this.card_container.appendChild(node);
         }
     });
 
-    var background = new Image(); background.src= "images/cardback.gif";
-    var jack = new Image(); jack.src= "images/jack.gif";
-    var queen = new Image(); queen.src= "images/queen.gif";
-    var king = new Image(); king.src= "images/king.gif";
+    /**
+     * Represents a player in the game...
+     *
+     * TODO: Initalize with an array of cards
+     *
+     * @type {*}
+     */
+    var Player = JS.Class({
+        construct:function (name, gender, type) {
+            this.name = name;
+            this.gender = gender;
+            this.hand = new Hand(type);
+            this.type = type;
+        },
+
+        clearHand:function () {
+
+        },
+
+        give:function (card) {
+            this.hand.add(card);
+        }
+    });
+
+    var background = new Image();
+    background.src = "images/cardback.gif";
+    var jack = new Image();
+    jack.src = "images/jack.gif";
+    var queen = new Image();
+    queen.src = "images/queen.gif";
+    var king = new Image();
+    king.src = "images/king.gif";
 
     /**
      * Based on http://www.brainjar.com
@@ -49,16 +118,20 @@ $(document).ready(function() {
      * @type {*}
      */
     var Card = JS.Class({
-        construct: function(suite, rank) {
+        construct:function (suite, rank) {
             this.suite = suite;
             this.rank = rank;
+        },
+
+        toString:function () {
+            return  this.rank + " of " + this.suite.title;
         },
 
         /**
          * Build the actual card node using either images or css
          * @return {Element}
          */
-        buildNode: function() {
+        buildNode:function () {
             var _cardNode, _frontNode, _spotNode, _tempNode, _textNode;
             var _indexStr, _spotChar;
 
@@ -72,6 +145,7 @@ $(document).ready(function() {
 
             _frontNode = document.createElement("DIV");
             _frontNode.className = "front";
+            _frontNode.className += this.suite.additionalClass();
 
             _spotNode = document.createElement("DIV");
             _spotNode.className = "index";
@@ -191,13 +265,13 @@ $(document).ready(function() {
         /**
          * Is this one of the K,Q,J cards?
          */
-        isFaceCard: function() {
+        isFaceCard:function () {
             return this.rank == KING || this.rank == QUEEN || this.rank == JACK;
         }
     });
 
     var Joker = Card.extend({
-        construct: function(index) {
+        construct:function (index) {
             this.parent.construct.apply(this, [new Suite(JOKER, "Joker"), index]);
         }
     });
@@ -206,18 +280,18 @@ $(document).ready(function() {
         /**
          * Construct a deck of cards
          */
-        construct: function() {
+        construct:function () {
             var self = this;
             this.visibleCards = [];
-            self.suites = [new Suite(CLUBS, "Clubs"),new Suite(DIAMONDS, "Diamonds"), new Suite(HEARTS, "Hearts"), new Suite(SPADES, "Spades")];
+            self.suites = [new Suite(CLUBS, "Clubs"), new Suite(DIAMONDS, "Diamonds"), new Suite(HEARTS, "Hearts"), new Suite(SPADES, "Spades")];
 
             self.cards = [];
-            _.each(self.suites, function(suite) {
-                _.each(_.range(2,11), function(itr) {
+            _.each(self.suites, function (suite) {
+                _.each(_.range(2, 11), function (itr) {
                     self.cards.push(new Card(suite, itr));
                 });
 
-                _.each([JACK, QUEEN, KING, ACE], function(face) {
+                _.each([JACK, QUEEN, KING, ACE], function (face) {
                     self.cards.push(new Card(suite, face));
                 })
             });
@@ -229,7 +303,7 @@ $(document).ready(function() {
         /**
          * Displays the deck at a specific position
          */
-        display: function() {
+        display:function () {
             var el, top, left;
             var n;
 
@@ -237,7 +311,7 @@ $(document).ready(function() {
             // displayed, just enough to get an idea of the number of cards in each.
 
             left = 0;
-            top  = 0;
+            top = 0;
             el = document.getElementById("deck");
             while (el.firstChild != null)
                 el.removeChild(el.firstChild);
@@ -248,7 +322,7 @@ $(document).ready(function() {
                 var node = this.cards[i].buildNode();
                 node.firstChild.style.visibility = "hidden";
                 node.style.left = left + "em";
-                node.style.top  = top  + "em";
+                node.style.top = top + "em";
                 el.appendChild(node);
                 //left += 0.10;
                 //top  += 0.05;
@@ -260,11 +334,24 @@ $(document).ready(function() {
         /**
          * Shuffle the cards
          */
-        shuffle: function() {
-            _.each(this.visibleCards, function(card, idx) {
+        shuffle:function () {
+
+            var i, j, k;
+            var temp;
+
+            // Shuffle the stack 'n' times.
+            for (j = 0; j < this.cards.length; j++) {
+                k = Math.floor(Math.random() * this.cards.length);
+                temp = this.cards[j];
+                this.cards[j] = this.cards[k];
+                this.cards[k] = temp;
+            }
+
+
+            _.each(this.visibleCards, function (card, idx) {
                 //shuffle a card every 100 seconds
-                var duration = (idx) * 100;
-                setTimeout(function() {
+                var duration = (idx) * 10;
+                setTimeout(function () {
                     $(card)
                         .animate({left:15 + "%", marginTop:2 + "em"}, 500, "easeOutBack", function () {
                             i--;
@@ -275,36 +362,36 @@ $(document).ready(function() {
             });
         },
 
-        deal: function() {
-//            left = 0;
-//            top  = 0;
-//            el = document.getElementById("hand");
-//            while (el.firstChild != null)
-//                el.removeChild(el.firstChild);
-//            for (i = 0; i < hand.cardCount(); i++) {
-//                node = hand.cards[i].createNode();
-//                node.style.left = left + "em";
-//                node.style.top  = top  + "em";
-//                el.appendChild(node);
-//                left += 1.00;
-//                top  += 0.25;
-//            }
-
+        deal:function () {
+            if (this.cards.length > 0)
+                return this.cards.shift();
+            else
+                return null;
         }
     });
 
     var deck = null;
+    var computer = new Player("Computer", "F", COMPUTER);
+    var user = new Player("Player 1", "M", PLAYER);
 
     if (deck == null) {
         deck = new Deck();
         deck.display();
+//        deck.shuffle();
+//        deck.deal()
     }
 
-    $('#shuffle').click(function() {
+    $('#shuffle').click(function () {
         deck.shuffle();
     });
 
-    $('#deal').click(function(){
-       deck.deal();
+
+    $('#deal').click(function () {
+        _.each(_.range(0, 4), function (idx) {
+            var player_card = deck.deal();
+            var computer_card = deck.deal();
+            user.give(player_card);
+            computer.give(computer_card);
+        });
     });
 });
