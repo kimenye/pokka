@@ -1,0 +1,30 @@
+body {
+    width: 1100px;
+    margin: 0 auto;
+    /*border: 1px solid #f5f5dc;*/
+}
+
+#playground {
+    width: 800px;
+    height: 600px;
+    border: 1px solid #eee;
+    margin: 60px auto;
+    display: inline-block;
+}
+
+.poker-table {
+    width: 600px;
+    height: 400px;
+    margin: 100px auto;
+    display: block;
+    background-color: rgb(21,76,19);
+    border: 10px solid black;
+    -webkit-border-radius: 45px;
+    -moz-border-radius: 45px;
+    border-radius: 45px;
+}
+
+#board {
+    float: right;
+    /*width: 300px;*/
+}
