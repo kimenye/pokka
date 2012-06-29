@@ -1,18 +1,5 @@
 $(document).ready(function() {
 
-    function ViewModel() {
-        var self = this;
-
-        self.messages = ko.observableArray([]);
-    }
-
-    var vm = new ViewModel();
-    ko.applyBindings(vm);
-
-    function log(msg) {
-        vm.messages.push({ txt: msg });
-    }
-
     var CLUBS = "C", HEARTS = "H", DIAMONDS = "D", SPADES = "S", JOKER = "J";
     var QUEEN = "Q", JACK = "J", KING = "K", ACE = "A";
 
@@ -44,6 +31,12 @@ $(document).ready(function() {
         }
     });
 
+    var Player = JS.Class({
+        construct: function(name, gender) {
+            this.name = name;
+            this.gender = gender;
+        }
+    });
 
     var background = new Image(); background.src= "images/cardback.gif";
     var jack = new Image(); jack.src= "images/jack.gif";
@@ -59,7 +52,6 @@ $(document).ready(function() {
         construct: function(suite, rank) {
             this.suite = suite;
             this.rank = rank;
-            log("Added the " + rank + " of " + suite.title);
         },
 
         /**
@@ -217,12 +209,10 @@ $(document).ready(function() {
         construct: function() {
             var self = this;
             this.visibleCards = [];
-            log("Setting up deck!");
             self.suites = [new Suite(CLUBS, "Clubs"),new Suite(DIAMONDS, "Diamonds"), new Suite(HEARTS, "Hearts"), new Suite(SPADES, "Spades")];
 
             self.cards = [];
             _.each(self.suites, function(suite) {
-                log("Setting up suite " + suite.title);
                 _.each(_.range(2,11), function(itr) {
                     self.cards.push(new Card(suite, itr));
                 });
@@ -275,15 +265,12 @@ $(document).ready(function() {
                 //shuffle a card every 100 seconds
                 var duration = (idx) * 100;
                 setTimeout(function() {
-                    console.log("Shuffling card: ", idx);
-
                     $(card)
-                    .animate({left:15 + "%", marginTop:2 + "em"}, 500, "easeOutBack", function () {
-                        i--;
-                        $(this).css("z-index", i)
-                    })
-                    .animate({left:0 + "%", marginTop:0 + "em"}, 500, "easeOutBack");
-
+                        .animate({left:15 + "%", marginTop:2 + "em"}, 500, "easeOutBack", function () {
+                            i--;
+                            $(this).css("z-index", i)
+                        })
+                        .animate({left:0 + "%", marginTop:0 + "em"}, 500, "easeOutBack");
                 }, duration);
             });
         }

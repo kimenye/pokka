@@ -1,9 +1,52 @@
-#playground
-  #deck.cardArea
-  #poker-table.poker-table
-  #controls
-    %button#shuffle Shuffle
-#board
-  %h1 Progress
-  %ol{'data-bind' => 'foreach: messages'}
-    %li{'data-bind' => 'text: txt'}
+-##playground
+-#  #deck
+-#  #poker-table.poker-table
+-#  #player1.cardArea
+-#  #player2.cardArea
+-#  #controls
+-#    %button#shuffle Shuffle
+-#    %button#players Players
+-#    %button#shuffle Deal
+-##board.hide
+-#  %h1 Progress
+-#  %ol{'data-bind' => 'foreach: messages'}
+-#    %li{'data-bind' => 'text: txt'}
+
+.container
+  .row
+    .hero-unit
+      %h1 Pokkah
+      %p If you play Poker in Kenya, don't be expecting to play Texas Hold'em or 7-Stud. That's for sissies!
+      %p What we play is more like Switch (http://en.wikipedia.org/wiki/Switch_(card_game), but we play with our own rules!
+  .row
+    .span12
+      %button.btn.btn-large#shuffle Shuffle
+      %button.btn.btn-large#deal Deal
+  .row
+    .span12
+      %br
+  .row
+    .span2.offset1
+      #deck
+    .span6
+      .poker-table
+    .span3
+      .container
+        .row
+          .avatar
+            %img{'src' => '/images/avatars/FB01.png'}
+          .computer
+            %h4 Computer
+          .cardArea#computerCards
+  .row
+    %br
+  .row
+    .span3.offset3
+      .container
+        .row
+          .avatar
+            %img{'src' => '/images/avatars/A01.png'}
+          .player
+            %h4 Player 1
+    .span6
+      .cardArea#playerCards

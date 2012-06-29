@@ -1,22 +1,12 @@
-body {
-    width: 1200px;
-    margin: 0 auto;
-    /*border: 1px solid #f5f5dc;*/
+#deck {
+    height: 300px;
+    position: relative;
 }
 
-#playground {
-    width: 1060px;
-    height: 600px;
-    border: 1px solid #eee;
-    margin: 60px auto;
-    display: inline-block;
-}
 
 .poker-table {
-    width: 600px;
-    height: 400px;
-    margin: 100px auto;
-    display: block;
+    width: 400px;
+    height: 300px;
     background-color: rgb(21,76,19);
     border: 10px solid black;
     -webkit-border-radius: 45px;
@@ -24,7 +14,12 @@ body {
     border-radius: 45px;
 }
 
+#player1 {
+    border: 1px solid black;
+    left: 25%;
+    position: relative;
+    width: 50%
+}
+
 #board {
-    /*float: right;*/
-    /*width: 300px;*/
 }

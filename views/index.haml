@@ -2,22 +2,32 @@
 %html
   %head
     %link{'rel' => 'shortcut icon', 'href' => 'images/favicon.ico'}
+    %link{'rel' => 'stylesheet', 'href' => 'css/bootstrap.min.css'}
     %link{'rel' => 'stylesheet', 'href' => 'css/style.css'}
     %link{'rel' => 'stylesheet', 'href' => 'css/cards.css'}
 
 
     %title pokkah
   %body
+    .container
+      .page-header.logo
+        %h1 Pokkah
+        %small
+          Kenyan Style Poker
 
     /! start the main body
     = yield
     /! end the main body
 
-
+    .container
+      %br
+        %hr
+          %footer
+            %span Fancy copyright stuff and privacy policies
 
     /! start of scripts
     %script{ 'type' => 'text/javascript', 'src' => 'javascript/jquery.1.7.2.js'}
-    -#%script{ 'type' => 'text/javascript', 'src' => 'javascript/jquery.gamequery-0.6.1.js'}
+    %script{ 'type' => 'text/javascript', 'src' => 'javascript/bootstrap.min.js'}
     %script{ 'type' => 'text/javascript', 'src' => 'javascript/js.class.min.js'}
     %script{ 'type' => 'text/javascript', 'src' => 'javascript/easing.js'}
     %script{ 'type' => 'text/javascript', 'src' => 'javascript/underscore-min.js'}
