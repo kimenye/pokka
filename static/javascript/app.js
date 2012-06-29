@@ -62,6 +62,10 @@ $(document).ready(function() {
             log("Added the " + rank + " of " + suite.title);
         },
 
+        /**
+         * Build the actual card node using either images or css
+         * @return {Element}
+         */
         buildNode: function() {
             var _cardNode, _frontNode, _spotNode, _tempNode, _textNode;
             var _indexStr, _spotChar;
@@ -71,9 +75,8 @@ $(document).ready(function() {
 
             // Build the front of card.
 
+            _spotChar = this.suite.symbolChar();
             _indexStr = this.rank;
-            if (this.toString() == "")
-                _indexStr = "\u00a0";
 
             _frontNode = document.createElement("DIV");
             _frontNode.className = "front";
@@ -89,7 +92,6 @@ $(document).ready(function() {
 
 
             // Create and add spots based on card rank (Ace thru 10).
-            _spotChar = this.suite.symbolChar();
 
             _spotNode = document.createElement("DIV");
             _textNode = document.createTextNode(_spotChar);
@@ -146,7 +148,7 @@ $(document).ready(function() {
             }
             if (this.rank == 8 || this.rank == 10) {
                 _spotNode.className = "spotB4";
-                _tempNode = spotNode.cloneNode(true);
+                _tempNode = _spotNode.cloneNode(true);
                 _frontNode.appendChild(_tempNode);
             }
             if (this.rank == 9 || this.rank == 10) {
@@ -154,10 +156,10 @@ $(document).ready(function() {
                 _tempNode = _spotNode.cloneNode(true);
                 _frontNode.appendChild(_tempNode);
                 _spotNode.className = "spotA4";
-                _tempNode = spotNode.cloneNode(true);
+                _tempNode = _spotNode.cloneNode(true);
                 _frontNode.appendChild(_tempNode);
                 _spotNode.className = "spotC2";
-                _tempNode = spotNode.cloneNode(true);
+                _tempNode = _spotNode.cloneNode(true);
                 _frontNode.appendChild(_tempNode);
                 _spotNode.className = "spotC4";
                 _tempNode = _spotNode.cloneNode(true);
@@ -168,11 +170,11 @@ $(document).ready(function() {
             _tempNode = document.createElement("IMG");
             _tempNode.className = "face";
             if (this.rank == JACK)
-                tempNode.src = "images/jack.gif";
+                _tempNode.src = "images/jack.gif";
             if (this.rank == QUEEN)
-                tempNode.src = "images/queen.gif";
+                _tempNode.src = "images/queen.gif";
             if (this.rank == KING)
-                tempNode.src = "images/king.gif";
+                _tempNode.src = "images/king.gif";
 
             // For face cards, add suit characters to the upper-left and lower-right
             // corners.
@@ -183,9 +185,13 @@ $(document).ready(function() {
                 _tempNode = _spotNode.cloneNode(true);
                 _frontNode.appendChild(_tempNode);
                 _spotNode.className = "spotC5";
-                _tempNode = spotNode.cloneNode(true);
+                _tempNode = _spotNode.cloneNode(true);
                 _frontNode.appendChild(_tempNode);
             }
+
+            // Add front node to the card node.
+
+            _cardNode.appendChild(_frontNode);
 
             return _cardNode;
         },
@@ -205,8 +211,12 @@ $(document).ready(function() {
     });
 
     var Deck = JS.Class({
+        /**
+         * Construct a deck of cards
+         */
         construct: function() {
             var self = this;
+            this.visibleCards = [];
             log("Setting up deck!");
             self.suites = [new Suite(CLUBS, "Clubs"),new Suite(DIAMONDS, "Diamonds"), new Suite(HEARTS, "Hearts"), new Suite(SPADES, "Spades")];
 
@@ -224,15 +234,77 @@ $(document).ready(function() {
 
             self.cards.push(new Joker(0));
             self.cards.push(new Joker(1));
+        },
+
+        /**
+         * Displays the deck at a specific position
+         */
+        display: function() {
+            var el, top, left;
+            var n;
+
+            // Note: only a fraction of the cards in the deck and discard pile are
+            // displayed, just enough to get an idea of the number of cards in each.
+
+            left = 0;
+            top  = 0;
+            el = document.getElementById("deck");
+            while (el.firstChild != null)
+                el.removeChild(el.firstChild);
+            n = this.cards.length;
+
+            for (i = 0; i < n; i++) {
+//            for (i = 0; i < Math.round(n / 5); i++) {
+                var node = this.cards[i].buildNode();
+                node.firstChild.style.visibility = "hidden";
+                node.style.left = left + "em";
+                node.style.top  = top  + "em";
+                el.appendChild(node);
+                //left += 0.10;
+                //top  += 0.05;
+
+                $(node).click(function () {
+                    $(this)
+                        .animate({left:15 + "%", marginTop:2 + "em"}, 500, "easeOutBack", function () {
+                            i--;
+                            $(this).css("z-index", i)
+                        })
+                        .animate({left:0 + "%", marginTop:0 + "em"}, 500, "easeOutBack");
+                });
+                this.visibleCards.push(node);
+            }
+        },
+
+        /**
+         * Shuffle the cards
+         */
+        shuffle: function() {
+            _.each(this.visibleCards, function(card, idx) {
+                //shuffle a card every 100 seconds
+                var duration = (idx) * 100;
+                setTimeout(function() {
+                    console.log("Shuffling card: ", idx);
+
+                    $(card)
+                    .animate({left:15 + "%", marginTop:2 + "em"}, 500, "easeOutBack", function () {
+                        i--;
+                        $(this).css("z-index", i)
+                    })
+                    .animate({left:0 + "%", marginTop:0 + "em"}, 500, "easeOutBack");
+
+                }, duration);
+            });
         }
     });
 
     var deck = null;
 
-    $('#setup').click(function() {
+    if (deck == null) {
+        deck = new Deck();
+        deck.display();
+    }
 
-        if (deck == null) {
-            deck = new Deck();
-        }
+    $('#shuffle').click(function() {
+        deck.shuffle();
     });
 });

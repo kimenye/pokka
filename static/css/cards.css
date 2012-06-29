@@ -5,8 +5,19 @@
 * Please see http://www.brainjar.com for terms of use.                        *
 ******************************************************************************/
 
+.cardArea {
+    font-size: 20pt;
+    float: left;
+    margin-right: 1em;
+    position: relative;
+    top: 40%;
+    left: 50px;
+    width:  4.50em;
+    height: 5.00em;
+}
+
 .card {
-    background-image: url("images/cardback.gif");
+    background-image: url("/images/cardback.gif");
     border-color: #808080 #000000 #000000 #808080;
     border-width: 1px;
     border-style: solid;
