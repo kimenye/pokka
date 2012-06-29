@@ -1,6 +1,9 @@
 #playground
   #poker-table.poker-table
-    #cards
+    #cards{'data-bind' => 'foreach: cards'}
+
+  #controls
+    %button#setup Setup
 #board
   %h1 Progress
   %ol{'data-bind' => 'foreach: messages'}
