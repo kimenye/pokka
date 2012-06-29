@@ -1,4 +1,6 @@
-#deck {
+#deck,
+#computer-deck,
+#player-deck {
     height: 300px;
     position: relative;
 }
@@ -22,4 +24,8 @@
 }
 
 #board {
+}
+
+.card {
+    /*-webkit-transition: all 0.5s ease-in-out;*/
 }

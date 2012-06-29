@@ -273,6 +273,23 @@ $(document).ready(function() {
                         .animate({left:0 + "%", marginTop:0 + "em"}, 500, "easeOutBack");
                 }, duration);
             });
+        },
+
+        deal: function() {
+//            left = 0;
+//            top  = 0;
+//            el = document.getElementById("hand");
+//            while (el.firstChild != null)
+//                el.removeChild(el.firstChild);
+//            for (i = 0; i < hand.cardCount(); i++) {
+//                node = hand.cards[i].createNode();
+//                node.style.left = left + "em";
+//                node.style.top  = top  + "em";
+//                el.appendChild(node);
+//                left += 1.00;
+//                top  += 0.25;
+//            }
+
         }
     });
 
@@ -285,5 +302,9 @@ $(document).ready(function() {
 
     $('#shuffle').click(function() {
         deck.shuffle();
+    });
+
+    $('#deal').click(function(){
+       deck.deal();
     });
 });
