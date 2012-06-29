@@ -27,6 +27,12 @@
     height: 5.00em;
 }
 
+.selected {
+    top: -1em !important;
+    border-color: green;
+    border-width: 3px;
+}
+
 .front {
     background-color: #ffffff;
     color: #000000;

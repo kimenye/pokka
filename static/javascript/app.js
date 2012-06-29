@@ -67,11 +67,11 @@ $(document).ready(function () {
             var top = this.stackFactor()[1] * numCards;
 
             var node = card.buildNode();
-            if (!this.hidden) {
 
-            }
             if (this.hidden)
                 node.firstChild.style.visibility = "hidden";
+
+            card.selectable = !this.hidden;
             node.style.left = left + "em";
             node.style.top = top + "em";
 
@@ -121,6 +121,7 @@ $(document).ready(function () {
         construct:function (suite, rank) {
             this.suite = suite;
             this.rank = rank;
+            this.selectable = false;
         },
 
         toString:function () {
@@ -137,6 +138,13 @@ $(document).ready(function () {
 
             _cardNode = document.createElement("DIV");
             _cardNode.className = "card";
+            var me = this;
+
+            $(_cardNode).click(function() {
+                if (me.selectable) {
+                    $(_cardNode).toggleClass("selected");
+                }
+            });
 
             // Build the front of card.
 
@@ -355,7 +363,7 @@ $(document).ready(function () {
                     $(card)
                         .animate({left:15 + "%", marginTop:2 + "em"}, 500, "easeOutBack", function () {
                             i--;
-                            $(this).css("z-index", i)
+                            $(this).css("z-index", i);
                         })
                         .animate({left:0 + "%", marginTop:0 + "em"}, 500, "easeOutBack");
                 }, duration);
