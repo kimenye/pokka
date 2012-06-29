@@ -263,14 +263,6 @@ $(document).ready(function() {
                 //left += 0.10;
                 //top  += 0.05;
 
-                $(node).click(function () {
-                    $(this)
-                        .animate({left:15 + "%", marginTop:2 + "em"}, 500, "easeOutBack", function () {
-                            i--;
-                            $(this).css("z-index", i)
-                        })
-                        .animate({left:0 + "%", marginTop:0 + "em"}, 500, "easeOutBack");
-                });
                 this.visibleCards.push(node);
             }
         },
