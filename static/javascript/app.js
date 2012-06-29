@@ -98,6 +98,10 @@ $(document).ready(function () {
 
         },
 
+        hasSelections: function() {
+
+        },
+
         give:function (card) {
             this.hand.add(card);
         }
@@ -126,6 +130,14 @@ $(document).ready(function () {
 
         toString:function () {
             return  this.rank + " of " + this.suite.title;
+        },
+
+        move: function() {
+//            var el = document.getElementById("card_" + id);
+            this.node.style["z-index"] = 1000;
+            this.node.style["left"] = 300 + "px";
+            this.node.style["top"] = 300 + "px";
+            this.node.style["z-index"] = 0;
         },
 
         /**
@@ -266,7 +278,7 @@ $(document).ready(function () {
             // Add front node to the card node.
 
             _cardNode.appendChild(_frontNode);
-
+            this.node = _cardNode;
             return _cardNode;
         },
 
@@ -393,6 +405,12 @@ $(document).ready(function () {
         deck.shuffle();
     });
 
+
+    $('#move').click(function() {
+       if (user.hasSelections()) {
+
+       }
+    });
 
     $('#deal').click(function () {
         _.each(_.range(0, 4), function (idx) {
