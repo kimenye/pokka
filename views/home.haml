@@ -20,8 +20,8 @@
       %p What we play is more like Switch (http://en.wikipedia.org/wiki/Switch_(card_game), but we play with our own rules!
   .row
     .span12
-      %button.btn.btn-large#shuffle Shuffle
-      %button.btn.btn-large#deal Deal
+      %button.btn.btn-large#shuffle{'data-bind' => 'click: shuffle'} Shuffle
+      %button.btn.btn-large#deal{'data-bind' => 'click: deal'} Deal
   .row
     .span12
       %br
@@ -42,7 +42,7 @@
     .span1.offset1
       .container
         .row
-          %button.btn.btn-large.btn-success#btn-move Move
+          %button.btn.btn-large.btn-success#btn-move{'data-bind' => 'click: move, enable: playerCanMove() '} Move
         .row
           %br
           %button.btn.btn-large#btn-move Pick
