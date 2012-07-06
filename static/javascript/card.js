@@ -84,10 +84,6 @@ var Hand = JS.Class({
 
     isEmpty: function() {
         return this.cards().length < 1;
-    },
-
-    toggleSelection: function(card) {
-        console.log("Toggling selection of card ", card.id);
     }
 });
 
@@ -271,9 +267,26 @@ var Card = JS.Class({
      */
     isFaceCard:function () {
         return this.rank == KING || this.rank == QUEEN || this.rank == JACK;
+    },
+
+    isAce: function() {
+        return this.rank == ACE;
+    },
+
+    isSpecialCard: function() {
+        return (this.suite.symbol == JOKER || this.rank == 2 || this.rank == 3 || this.rank == 8);
+    },
+
+    canStart: function() {
+        //TODO: This rules need to be downloaded from the server so that
+        //there is collaboration in defining the rules
+
+        //at the minimum you can start with a face card, ace or 2,3,joker,8
+        return !this.isFaceCard() && !this.isAce() && !this.isSpecialCard();
     }
 });
 
+//TODO: Need to handle the rendering of the joker card
 var Joker = Card.extend({
     construct:function (index) {
         this.parent.construct.apply(this, [new Suite(JOKER, "Joker"), index]);
@@ -371,5 +384,18 @@ var Deck = JS.Class({
             return this.cards.shift();
         else
             return null;
+    },
+
+    cut: function() {
+        //need to return the first card that can start
+        var can_start = false;
+        var card = null;
+        while(!can_start) {
+            var card = this.deal();
+            can_start = card.canStart();
+            if (!can_start)
+                this.cards.push(card);
+        }
+        return card;
     }
 });

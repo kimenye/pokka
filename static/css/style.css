@@ -1,6 +1,7 @@
 #deck,
 #computer-deck,
-#player-deck {
+#player-deck,
+#board-deck {
     height: 300px;
     position: relative;
 }

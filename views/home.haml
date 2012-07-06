@@ -20,8 +20,13 @@
       %p What we play is more like Switch (http://en.wikipedia.org/wiki/Switch_(card_game), but we play with our own rules!
   .row
     .span12
-      %button.btn.btn-large#shuffle{'data-bind' => 'click: shuffle'} Shuffle
-      %button.btn.btn-large#deal{'data-bind' => 'click: deal'} Deal
+      .container
+        .span2
+          %button.btn.btn-large#start{'data-bind' => 'click: startGame, disable: inProgress '} Start Game
+        .span3.offset3
+          %h6{'data-bind' => 'text: game().whoseTurn'}
+      -#%button.btn.btn-large#shuffle{'data-bind' => 'click: shuffle'} Shuffle
+      -#%button.btn.btn-large#deal{'data-bind' => 'click: deal'} Deal
   .row
     .span12
       %br
@@ -30,6 +35,7 @@
       #deck
     .span6
       .poker-table
+        #board-deck
     .span3
       .container
         .row
@@ -45,7 +51,7 @@
           %button.btn.btn-large.btn-success#btn-move{'data-bind' => 'click: move, enable: playerCanMove() '} Move
         .row
           %br
-          %button.btn.btn-large#btn-move Pick
+          %button.btn.btn-large#btn-move{'data-bind' => 'enable: playerCanPlay()'} Pick
     .span1
       .container
         .row
