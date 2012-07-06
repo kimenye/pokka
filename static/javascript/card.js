@@ -39,12 +39,17 @@ var Suite = JS.Class({
 var Hand = JS.Class({
     construct:function (type) {
         this.cards = ko.observableArray([]);
+        var self = this;
         this.hidden = type != PLAYER;
         this.card_container = document.getElementById(type + "-deck");
 
         while (this.card_container.firstChild != null) {
             this.card_container.removeChild(this.card_container.firstChild);
         }
+
+        this.getSelectedCards = ko.computed(function() {
+            return _.filter(self.cards(), function(card) { return card.selected() });
+        });
     },
 
     /**
@@ -60,6 +65,7 @@ var Hand = JS.Class({
 
     add:function (card) {
         this.cards.push(card);
+        card.current_hand = this;
         var numCards = this.cards().length;
         var left = this.stackFactor()[0] * numCards;
         var top = this.stackFactor()[1] * numCards;
@@ -78,6 +84,10 @@ var Hand = JS.Class({
 
     isEmpty: function() {
         return this.cards().length < 1;
+    },
+
+    toggleSelection: function(card) {
+        console.log("Toggling selection of card ", card.id);
     }
 });
 
@@ -91,6 +101,9 @@ var Card = JS.Class({
         this.suite = suite;
         this.rank = rank;
         this.selectable = false;
+        this.id = rank + "_" + suite.title;
+        this.selected = ko.observable(false);
+        this.current_hand = null; //TODO: is the hand part of the static definition of the game or is it an active element?
     },
 
     toString:function () {
@@ -103,6 +116,11 @@ var Card = JS.Class({
         this.node.style["left"] = 300 + "px";
         this.node.style["top"] = 300 + "px";
         this.node.style["z-index"] = 0;
+    },
+
+    handleClick: function(node) {
+        node.toggleClass("selected");
+        this.selected(!this.selected());
     },
 
     /**
@@ -118,8 +136,9 @@ var Card = JS.Class({
         var me = this;
 
         $(_cardNode).click(function() {
+            //TODO: We need to handle different states of the card
             if (me.selectable) {
-                $(_cardNode).toggleClass("selected");
+                me.handleClick($(_cardNode));
             }
         });
 

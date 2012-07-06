@@ -55,3 +55,11 @@
             %h4 Player 1
     .span6
       #player-deck
+  .row{'data-bind' => 'with: user'}
+    .span2
+      %h4 User Selections
+    .span10
+      %ul.unstyled{'data-bind' => 'foreach: hand().getSelectedCards'}
+        %li
+          %span.span1{'data-bind' => 'text: id'}
+
