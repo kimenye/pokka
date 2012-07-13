@@ -23,6 +23,12 @@ function randomCard() {
     return new Card(randomSuite(), randomRank());
 }
 
+function buildHand(cards) {
+    var hand = new Hand(COMPUTER);
+    _.each(cards, function(card) { hand.cards.push(card); });
+    return hand;
+}
+
 describe("Test Card rules", function() {
 
     var deck;
@@ -85,10 +91,12 @@ describe("Building moves rules", function() {
     it("no moves are possible if no cards can follow", function() {
         var starting_card = new Card(SUITE_DIAMONDS, 10);
 
-        hand.cards.push(new Card(SUITE_HEARTS, 2));
-        hand.cards.push(new Card(SUITE_SPADES, 3));
-        hand.cards.push(new Card(SUITE_HEARTS, 4));
-        hand.cards.push(new Card(SUITE_CLUBS, 4));
+        hand = buildHand([
+            new Card(SUITE_HEARTS, 2),
+            new Card(SUITE_SPADES, 3),
+            new Card(SUITE_HEARTS, 4),
+            new Card(SUITE_CLUBS, 4)
+        ]);
 
         expect(hand.canPlay(starting_card)).toBe(false);
     });
@@ -96,18 +104,81 @@ describe("Building moves rules", function() {
     it("moves are possible if at least one card can follow the starting card", function() {
         var starting_card = new Card(SUITE_DIAMONDS, 10);
 
-        var five_d = new Card(SUITE_DIAMONDS, 5);
-        var six_d = new Card(SUITE_CLUBS, 6);
-        var k_s = new Card(SUITE_SPADES, KING);
-        var two_c = new Card(SUITE_CLUBS, 2);
+        hand = buildHand([
+            new Card(SUITE_DIAMONDS, 5),
+            new Card(SUITE_CLUBS, 6),
+            new Card(SUITE_CLUBS, KING),
+            new Card(SUITE_CLUBS, 2)
+        ]);
 
-        var cards_in_hand = [five_d, six_d, k_s, two_c];
-
-        _.each(cards_in_hand, function(card) { hand.cards.push(card); });
-
-        expect(hand.cards().length).toBe(4);
         expect(hand.canPlay(starting_card)).toBe(true);
 
+    });
+
+    it("multiple moves are possible without grouping cards", function() {
+        hand = buildHand([
+            new Card(SUITE_DIAMONDS, 5),
+            new Card(SUITE_DIAMONDS, 6),
+            new Card(SUITE_SPADES, KING),
+            new Card(SPADES, ACE)
+        ]);
+
+        expect(hand.possibleMoves(new Card(SUITE_DIAMONDS, 10)).length).toBe(3);
+    });
+
+    it("a group within a hand is unique", function() {
+        var gp = new Group([
+            new Card(SUITE_DIAMONDS, 5),
+            new Card(SUITE_CLUBS, 5)
+        ]);
+
+        expect(gp.contains(new Card(SUITE_CLUBS,5))).toBe(true);
+        expect(gp.contains(new Card(SUITE_DIAMONDS,7))).toBe(false);
+
+        expect(gp.canJoin(new Card(SUITE_HEARTS, 5))).toBe(true);
+        expect(gp.canJoin(new Card(SUITE_HEARTS, 4))).toBe(false);
+    });
+
+    it("an ace can't join a group unless it is with another ace", function() {
+       var gp = new Group([
+            new Card(SUITE_DIAMONDS, 5),
+            new Card(SUITE_CLUBS, 5)
+       ]);
+
+        expect(gp.canJoin(new Card(SUITE_CLUBS,ACE))).toBe(false);
+    });
+
+    it("can create a group", function() {
+
+        hand = buildHand([
+            new Card(SUITE_DIAMONDS, 5),
+            new Card(SUITE_DIAMONDS, 6)
+        ]);
+
+        expect(hand.groups().length).toBe(1);
+    });
+
+
+    it("hands can group cards that follow", function() {
+        hand = buildHand([
+            new Card(SUITE_DIAMONDS, 5),
+            new Card(SUITE_DIAMONDS, 6),
+            new Card(SUITE_SPADES, 6),
+            new Card(SPADES, ACE)
+        ]);
+
+        expect(hand.groups().length).toBe(1);
+    });
+
+    it("multiple moves are possible by grouping cards", function() {
+        hand = buildHand([
+            new Card(SUITE_DIAMONDS, 5),
+            new Card(SUITE_DIAMONDS, 6),
+            new Card(SUITE_SPADES, 6),
+            new Card(SPADES, ACE)
+        ]);
+
+        expect(hand.possibleMoves(new Card(SUITE_DIAMONDS, 10)).length).toBe(4);
     });
 })
 

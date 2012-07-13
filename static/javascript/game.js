@@ -54,13 +54,11 @@ var Board = JS.Class({
     },
 
     start: function(openingCard) {
-//            this.cards.push(openingCard);
         this.drawCard(openingCard);
     },
 
     drawCard: function(card) {
         this.cards.push(card);
-//            card.current_hand = this;
         card.current_hand = null;
         var numCards = this.cards().length;
         var left =5 + (0.25 * numCards);
@@ -68,12 +66,10 @@ var Board = JS.Class({
 
         var node = card.buildNode();
 
-//            if (this.hidden)
-//                node.firstChild.style.visibility = "hidden";
-
-        card.selectable = false;
         node.style.left = left + "em";
         node.style.top = top + "em";
+
+        card.selectable = false;
 
         this.card_container.appendChild(node);
     }

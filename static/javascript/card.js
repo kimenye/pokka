@@ -45,9 +45,33 @@ var Move = JS.Class({
 
     construct: function(cards) {
         this.cards = cards;
-//        this.player = player;
     }
 });
+
+var Group = JS.Class({
+
+    construct: function(cards) {
+        this.cards = cards;
+    },
+
+    contains: function(card) {
+        return _.find(this.cards, function(c) { return card.eq(c) }) != null;
+    },
+
+    canJoin: function(card) {
+        if (!card.isAce()) {
+            return card.canFollow(_.last(this.cards));
+        }
+        else
+        {
+            return _.last(this.cards).isAce(); //can only join groups with fellow aces
+        }
+    },
+
+    add: function(card) {
+        this.cards.push(card);
+    }
+})
 
 var Hand = JS.Class({
     construct:function (type) {
@@ -77,6 +101,35 @@ var Hand = JS.Class({
             return [0.25, 0.0625];
         else
             return [1.0, 0.25];
+    },
+
+    groups: function() {
+        var _groups = [];
+        var self = this;
+        _.each(this.cards(), function(card) {
+            var _candidate_group = _.find(_groups, function(group) {
+               return group.canJoin(card);
+            });
+
+            if (_candidate_group != null) {
+                _candidate_group.add(card);
+            }
+            else
+            {
+                //try and build your own group
+                _.each(self.cards(), function(target) {
+                    //skip yourself
+                    if(!card.eq(target)) {
+                        if (target.canFollow(card)) {
+                            //build a group
+                            _groups.push(new Group([card,target]));
+                        }
+                    }
+                });
+            }
+        });
+
+        return _groups;
     },
 
     possibleMoves: function(top_card) {
@@ -318,6 +371,10 @@ var Card = JS.Class({
         return !this.isFaceCard() && !this.isAce() && !this.isSpecialCard();
     },
 
+    eq: function(other) {
+        return (this.suite == other.suite && this.rank == other.rank);
+    },
+
     /**
      * Check if a card can follow another card...
      *
@@ -327,7 +384,9 @@ var Card = JS.Class({
         var isSameSuite = (this.suite == card.suite);
         var isSameRank = (this.rank == card.rank);
 
-        return (isSameRank || isSameSuite || this.isAce())
+        var can_follow = (isSameRank || isSameSuite || this.isAce());
+        console.log(this.toString() + " can follow: " + card.toString() + ": ", can_follow);
+        return can_follow;
     }
 });
 
