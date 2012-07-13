@@ -303,7 +303,7 @@ var Card = JS.Class({
         var isSameSuite = (this.suite == card.suite);
         var isSameRank = (this.rank == card.rank);
 
-        return (isSameRank || isSameSuite)
+        return (isSameRank || isSameSuite || this.isAce())
     }
 });
 

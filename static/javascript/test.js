@@ -3,8 +3,24 @@
  */
 
 //helper functions
+
+function randomFromInterval(from,to)
+{
+    return Math.floor(Math.random()*(to-from+1)+from);
+}
+
 function randomRank() {
-   return Math.max(2,Math.floor(Math.random() * 10));
+
+    return randomFromInterval(2,10);
+}
+
+function randomSuite() {
+    var _suites = [SUITE_CLUBS, SUITE_DIAMONDS, SUITE_HEARTS, SUITE_SPADES];
+    return _suites[randomFromInterval(0,3)];
+}
+
+function randomCard() {
+    return new Card(randomSuite(), randomRank());
 }
 
 describe("Test Card rules", function() {
@@ -40,6 +56,13 @@ describe("Test Card rules", function() {
         var random_spade = new Card(SUITE_SPADES, rank);
 
         expect(random_diamond.canFollow(random_spade)).toBe(true);
+    });
+
+    it("an ace can follow any card", function() {
+        var any_card = randomCard();
+        var an_ace = new Card(SUITE_DIAMONDS, ACE);
+
+        expect(an_ace.canFollow(any_card)).toBe(true);
     });
 });
 
