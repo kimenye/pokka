@@ -14,11 +14,12 @@ var Turn = JS.Class({
 
 var Game = JS.Class({
     //TODO: need to implement multi player...
-    construct: function(user_player, computer_player, board) {
+    construct: function(user_player, computer_player, board, deck) {
         var self = this;
         this.user = user_player;
         this.computer = computer_player;
         this.board = board;
+        this.deck = deck;
 
         this.whoseTurn = ko.computed(function() {
             var turn = _.find([self.user, self.computer], function(player) {
@@ -36,7 +37,7 @@ var Game = JS.Class({
         //randomly pick which user gets to start
         //TODO: implement correct coin toss
         //TODO: for now make the computer start coz it needs to be trained
-        var playerWinsToss = Math.floor( Math.random() * 2 ) == 1
+        var playerWinsToss = Math.floor( Math.random() * 2 ) == 1;
         if (playerWinsToss)
             this.giveTurnTo(this.user, this.computer);
         else

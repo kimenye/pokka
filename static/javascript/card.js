@@ -2,6 +2,7 @@ var CLUBS = "C", HEARTS = "H", DIAMONDS = "D", SPADES = "S", JOKER = "J";
 var QUEEN = "Q", JACK = "J", KING = "K", ACE = "A";
 var COMPUTER = "computer", PLAYER = "player";
 
+
 var Suite = JS.Class({
     construct:function (symbol, title) {
         this.symbol = symbol;
@@ -35,6 +36,10 @@ var Suite = JS.Class({
     }
 });
 
+var SUITE_CLUBS = new Suite(CLUBS, "Clubs");
+var SUITE_DIAMONDS = new Suite(DIAMONDS, "Diamonds");
+var SUITE_HEARTS = new Suite(HEARTS, "Hearts");
+var SUITE_SPADES = new Suite(SPADES, "Spades");
 
 var Hand = JS.Class({
     construct:function (type) {
@@ -287,6 +292,18 @@ var Card = JS.Class({
 
         //at the minimum you can start with a face card, ace or 2,3,joker,8
         return !this.isFaceCard() && !this.isAce() && !this.isSpecialCard();
+    },
+
+    /**
+     * Check if a card can follow another card...
+     *
+     * @param card
+     */
+    canFollow: function(card) {
+        var isSameSuite = (this.suite == card.suite);
+        var isSameRank = (this.rank == card.rank);
+
+        return (isSameRank || isSameSuite)
     }
 });
 
@@ -304,7 +321,7 @@ var Deck = JS.Class({
     construct:function () {
         var self = this;
         this.visibleCards = [];
-        self.suites = [new Suite(CLUBS, "Clubs"), new Suite(DIAMONDS, "Diamonds"), new Suite(HEARTS, "Hearts"), new Suite(SPADES, "Spades")];
+        self.suites = [SUITE_CLUBS, SUITE_DIAMONDS, SUITE_HEARTS, SUITE_SPADES];
 
         self.cards = [];
         _.each(self.suites, function (suite) {
