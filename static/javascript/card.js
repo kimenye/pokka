@@ -31,7 +31,7 @@ var Suite = JS.Class({
                 _symbolChar = "\u2660";
                 break;
         }
-        return _symbolChar
+        return _symbolChar;
     }
 });
 
@@ -40,7 +40,10 @@ var Hand = JS.Class({
     construct:function (type) {
         this.cards = ko.observableArray([]);
         var self = this;
-        this.hidden = type != PLAYER;
+//TODO: Temporarily showing the computers cards for debugging purposes
+//        this.hidden = type != PLAYER;
+        this.hidden = false;
+
         this.card_container = document.getElementById(type + "-deck");
 
         while (this.card_container.firstChild != null) {
@@ -71,6 +74,7 @@ var Hand = JS.Class({
         var top = this.stackFactor()[1] * numCards;
 
         var node = card.buildNode();
+
 
         if (this.hidden)
             node.firstChild.style.visibility = "hidden";
