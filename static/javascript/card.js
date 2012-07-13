@@ -41,13 +41,21 @@ var SUITE_DIAMONDS = new Suite(DIAMONDS, "Diamonds");
 var SUITE_HEARTS = new Suite(HEARTS, "Hearts");
 var SUITE_SPADES = new Suite(SPADES, "Spades");
 
+var Move = JS.Class({
+
+    construct: function(cards) {
+        this.cards = cards;
+//        this.player = player;
+    }
+});
+
 var Hand = JS.Class({
     construct:function (type) {
         this.cards = ko.observableArray([]);
         var self = this;
 //TODO: Temporarily showing the computers cards for debugging purposes
-//        this.hidden = type != PLAYER;
-        this.hidden = false;
+        this.hidden = type != PLAYER;
+//        this.hidden = false;
 
         this.card_container = document.getElementById(type + "-deck");
 
@@ -69,6 +77,22 @@ var Hand = JS.Class({
             return [0.25, 0.0625];
         else
             return [1.0, 0.25];
+    },
+
+    possibleMoves: function(top_card) {
+        //first check if there are any possible moves
+        var self = this;
+        var moves = [];
+        _.each(this.cards(), function(card) {
+            if(card.canFollow(top_card)) {
+                moves.push(new Move([card]));
+            }
+        });
+        return moves;
+    },
+
+    canPlay: function(top_card) {
+        return this.possibleMoves(top_card).length > 0;
     },
 
     add:function (card) {

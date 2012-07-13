@@ -66,8 +66,52 @@ describe("Test Card rules", function() {
     });
 });
 
+
+describe("Building moves rules", function() {
+    var hand, deck, computer, board;
+
+    beforeEach(function() {
+        computer = new ComputerPlayer();
+        hand = new Hand(COMPUTER);
+        computer.hand(hand);
+        board = new Board();
+    });
+
+    afterEach(function() {
+       hand = null;
+    });
+
+
+    it("no moves are possible if no cards can follow", function() {
+        var starting_card = new Card(SUITE_DIAMONDS, 10);
+
+        hand.cards.push(new Card(SUITE_HEARTS, 2));
+        hand.cards.push(new Card(SUITE_SPADES, 3));
+        hand.cards.push(new Card(SUITE_HEARTS, 4));
+        hand.cards.push(new Card(SUITE_CLUBS, 4));
+
+        expect(hand.canPlay(starting_card)).toBe(false);
+    });
+
+    it("moves are possible if at least one card can follow the starting card", function() {
+        var starting_card = new Card(SUITE_DIAMONDS, 10);
+
+        var five_d = new Card(SUITE_DIAMONDS, 5);
+        var six_d = new Card(SUITE_CLUBS, 6);
+        var k_s = new Card(SUITE_SPADES, KING);
+        var two_c = new Card(SUITE_CLUBS, 2);
+
+        var cards_in_hand = [five_d, six_d, k_s, two_c];
+
+        _.each(cards_in_hand, function(card) { hand.cards.push(card); });
+
+        expect(hand.cards().length).toBe(4);
+        expect(hand.canPlay(starting_card)).toBe(true);
+
+    });
+})
+
 describe("Test Game starting mechanics", function() {
-//    var a;
 
     var computerPlayer, userPlayer, board, game, deck;
 

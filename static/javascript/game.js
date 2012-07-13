@@ -1,10 +1,3 @@
-var Move = JS.Class({
-
-    construct: function(player) {
-
-    }
-});
-
 var Turn = JS.Class({
     construct: function() {
         var self = this;
@@ -110,6 +103,10 @@ var Player = JS.Class({
 
     give:function (card) {
         this.hand().add(card);
+    },
+
+    canPlay: function() {
+        return this.isTurnToPlay();
     }
 });
 
