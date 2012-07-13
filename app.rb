@@ -8,6 +8,10 @@ class PokerApp < Sinatra::Base
     haml :home, :layout => :index
   end
 
+  get '/test' do
+    haml :test
+  end
+
 
   configure do
     set :public_folder, Proc.new { File.join(root, "static") }
