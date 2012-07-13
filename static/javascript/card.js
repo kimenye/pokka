@@ -60,7 +60,7 @@ var Group = JS.Class({
 
     canJoin: function(card) {
         if (!card.isAce()) {
-            return card.canFollow(_.last(this.cards));
+            return card.canPlayTogetherWith(_.last(this.cards));
         }
         else
         {
@@ -70,6 +70,14 @@ var Group = JS.Class({
 
     add: function(card) {
         this.cards.push(card);
+    },
+
+    toString: function() {
+//        debugger;
+        var self = this;
+        var _str = "[";
+        _.each(this.cards, function(card,idx) { _str += card.toString() + (idx < self.cards.length ? " , " : "" ) });
+        _str = "]";
     }
 })
 
@@ -127,6 +135,12 @@ var Hand = JS.Class({
                     }
                 });
             }
+        });
+
+//        debugger;
+        _.each(_groups, function(group) {
+            console.log("Group: ", group.toString());
+//            debugger;
         });
 
         return _groups;
@@ -385,8 +399,17 @@ var Card = JS.Class({
         var isSameRank = (this.rank == card.rank);
 
         var can_follow = (isSameRank || isSameSuite || this.isAce());
-        console.log(this.toString() + " can follow: " + card.toString() + ": ", can_follow);
         return can_follow;
+    },
+
+    /**
+     * Can be joined with the card specified in a group
+     *
+     * @param card
+     * @return {*}
+     */
+    canPlayTogetherWith: function(card) {
+        return this.canFollow(card) && this.rank == card.rank;
     }
 });
 

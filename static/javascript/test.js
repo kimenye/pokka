@@ -29,7 +29,7 @@ function buildHand(cards) {
     return hand;
 }
 
-describe("Test Card rules", function() {
+describe("Test Card rules:", function() {
 
     var deck;
 
@@ -37,18 +37,18 @@ describe("Test Card rules", function() {
         deck = new Deck();
     })
 
-    it("has 54 cards per deck", function() {
+    it("A deck has 54 cards per deck", function() {
        expect(deck.cards.length).toBe(54);
     });
 
-    it("cannot start game with invalid card", function() {
+    it("Game cannot start game with invalid card", function() {
         var starting_card = deck.cut();
         expect(starting_card.isFaceCard()).toBe(false);
         expect(starting_card.isSpecialCard()).toBe(false);
         expect(starting_card.isAce()).toBe(false);
     });
 
-    it("cards of the same suite can follow each other", function() {
+    it("Cards of the same suite can follow each other", function() {
         var random_spade_card = new Card(SUITE_SPADES, randomRank());
         var other_spade_card = new Card(SUITE_SPADES, randomRank());
 
@@ -56,7 +56,7 @@ describe("Test Card rules", function() {
         expect(other_spade_card.canFollow(random_spade_card)).toBe(true);
     });
 
-    it("cards of a different suite but same rank can follow each other", function() {
+    it("Cards of a different suite but same rank can follow each other", function() {
         var rank = randomRank();
         var random_diamond = new Card(SUITE_DIAMONDS, rank);
         var random_spade = new Card(SUITE_SPADES, rank);
@@ -64,16 +64,31 @@ describe("Test Card rules", function() {
         expect(random_diamond.canFollow(random_spade)).toBe(true);
     });
 
-    it("an ace can follow any card", function() {
+    it("An ace can follow any card", function() {
         var any_card = randomCard();
         var an_ace = new Card(SUITE_DIAMONDS, ACE);
 
         expect(an_ace.canFollow(any_card)).toBe(true);
     });
+
+    it("A card can be be in a move with another if they are the same rank", function() {
+        var five_d = new Card(SUITE_DIAMONDS, 5);
+        var five_s = new Card(SUITE_SPADES, 5);
+
+        expect(five_d.canPlayTogetherWith(five_s)).toBe(true);
+    });
+
+    it("A card cannot be in a move with another if they are not the same rank", function() {
+        var five_d = new Card(SUITE_DIAMONDS, 5);
+        var six_d = new Card(SUITE_DIAMONDS, 6);
+
+        expect(five_d.canPlayTogetherWith(six_d)).toBe(false);
+    })
+
 });
 
 
-describe("Building moves rules", function() {
+describe("Move rules:", function() {
     var hand, deck, computer, board;
 
     beforeEach(function() {
@@ -88,7 +103,7 @@ describe("Building moves rules", function() {
     });
 
 
-    it("no moves are possible if no cards can follow", function() {
+    it("No moves are possible if no cards can follow", function() {
         var starting_card = new Card(SUITE_DIAMONDS, 10);
 
         hand = buildHand([
@@ -101,7 +116,7 @@ describe("Building moves rules", function() {
         expect(hand.canPlay(starting_card)).toBe(false);
     });
 
-    it("moves are possible if at least one card can follow the starting card", function() {
+    it("Moves are possible if at least one card can follow the starting card", function() {
         var starting_card = new Card(SUITE_DIAMONDS, 10);
 
         hand = buildHand([
@@ -115,7 +130,7 @@ describe("Building moves rules", function() {
 
     });
 
-    it("multiple moves are possible without grouping cards", function() {
+    it("Multiple moves are possible without grouping cards", function() {
         hand = buildHand([
             new Card(SUITE_DIAMONDS, 5),
             new Card(SUITE_DIAMONDS, 6),
@@ -126,7 +141,29 @@ describe("Building moves rules", function() {
         expect(hand.possibleMoves(new Card(SUITE_DIAMONDS, 10)).length).toBe(3);
     });
 
-    it("a group within a hand is unique", function() {
+    it("A group does not exist if no cards in a hand can be played together even if they can follow each other", function() {
+
+        hand = buildHand([
+            new Card(SUITE_DIAMONDS, 5),
+            new Card(SUITE_DIAMONDS, 6)
+        ]);
+
+        expect(hand.groups().length).toBe(0);
+    });
+
+
+    it("A group exists if more than one cards in a hand can be played together", function() {
+        hand = buildHand([
+            new Card(SUITE_DIAMONDS, 5),
+            new Card(SUITE_DIAMONDS, 6),
+            new Card(SUITE_SPADES, 6),
+            new Card(SPADES, ACE)
+        ]);
+
+        expect(hand.groups().length).toBe(1);
+    });
+
+    it("A group within a hand is unique", function() {
         var gp = new Group([
             new Card(SUITE_DIAMONDS, 5),
             new Card(SUITE_CLUBS, 5)
@@ -139,35 +176,13 @@ describe("Building moves rules", function() {
         expect(gp.canJoin(new Card(SUITE_HEARTS, 4))).toBe(false);
     });
 
-    it("an ace can't join a group unless it is with another ace", function() {
+    it("An ace can't join a group unless it is with another ace", function() {
        var gp = new Group([
             new Card(SUITE_DIAMONDS, 5),
             new Card(SUITE_CLUBS, 5)
        ]);
 
         expect(gp.canJoin(new Card(SUITE_CLUBS,ACE))).toBe(false);
-    });
-
-    it("can create a group", function() {
-
-        hand = buildHand([
-            new Card(SUITE_DIAMONDS, 5),
-            new Card(SUITE_DIAMONDS, 6)
-        ]);
-
-        expect(hand.groups().length).toBe(1);
-    });
-
-
-    it("hands can group cards that follow", function() {
-        hand = buildHand([
-            new Card(SUITE_DIAMONDS, 5),
-            new Card(SUITE_DIAMONDS, 6),
-            new Card(SUITE_SPADES, 6),
-            new Card(SPADES, ACE)
-        ]);
-
-        expect(hand.groups().length).toBe(1);
     });
 
     it("multiple moves are possible by grouping cards", function() {
@@ -182,7 +197,7 @@ describe("Building moves rules", function() {
     });
 })
 
-describe("Test Game starting mechanics", function() {
+describe("Game starting mechanics:", function() {
 
     var computerPlayer, userPlayer, board, game, deck;
 
