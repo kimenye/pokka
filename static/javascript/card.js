@@ -140,17 +140,17 @@ var Hand = JS.Class({
             });
 
             if (_candidate_group != null) {
-                console.log("A candidate group exists for card ", card.toString());
+//                console.log("A candidate group exists for card ", card.toString());
 //                _candidate_group.add(card);
             }
             else
             {
-                console.log("A candidate group does not exist for card", card.toString());
+//                console.log("A candidate group does not exist for card", card.toString());
                 //try and build your own group
                 _.each(self.cards(), function(target) {
 //                    //skip yourself
                     if(!card.eq(target)) {
-                        console.log(card.toString() + " can follow " + target.toString() + " : ", target.canFollow(card));
+//                        console.log(card.toString() + " can follow " + target.toString() + " : ", target.canFollow(card));
                     }
 //                        if (target.canFollow(card)) {
 //                            //build a group
@@ -160,11 +160,6 @@ var Hand = JS.Class({
                 });
             }
         });
-//
-//        _.each(_groups, function(group) {
-//            console.log("Group: ", group.toString());
-//        });
-//
         return _groups;
     },
 

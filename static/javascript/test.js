@@ -29,6 +29,10 @@ function buildHand(cards) {
     return hand;
 }
 
+function debugArray(array) {
+    _.each(array, function(a) { console.log(a) });
+}
+
 describe("Card rules:", function() {
 
     var deck;
@@ -117,6 +121,43 @@ describe("Card rules:", function() {
 
             expect(eight_d.canPlayTogetherWith(seven_d)).toBe(true);
         });
+    });
+});
+
+describe("Utility rules", function() {
+
+    it("Decompose returns the possible combinations in array given the minimum length", function() {
+
+        var arr = [1,2,3,4];
+        expect(decompose(arr,2).length).toBe(3);
+    });
+
+    it("Raw Permuations returns the possible number of permutations", function() {
+
+        var arr = [1,2];
+        expect(permute(arr).length).toBe(2);
+
+        var arr = [1,2,3];
+        expect(permute(arr).length).toBe(6);
+    });
+
+    it("When an array length is equal to the minimum size of combinations then the total possibilities is equal to the number of permutations", function() {
+        var arr = [1,2];
+        expect(possible_combinations(arr, 2).length).toBe(permute(arr).length);
+    });
+
+    it("The number of combinations is equal to the sum of the number of permutations of the component parts", function() {
+        var arr = [1,2,3,4];
+
+        var decomposed = decompose(arr,2);
+        var num_posibilities = 0;
+        _.each(decomposed, function(a) {
+            num_posibilities += permute(a).length;
+        });
+
+        console.log("Total number of possibilities : ", num_posibilities);
+
+        expect(possible_combinations(arr,2).length).toBe(num_posibilities);
     });
 });
 
