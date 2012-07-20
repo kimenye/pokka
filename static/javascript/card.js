@@ -69,6 +69,10 @@ var Group = JS.Class({
             _preceding = _following;
         }
 
+        var cs = "";
+        _.each(self.cards, function(c) { cs += c.toString() + " " });
+
+//        console.log("Group: " + cs + " : ", _result);
         return _result;
     },
 
@@ -133,33 +137,15 @@ var Hand = JS.Class({
         var _groups = [];
         var self = this;
 
-
-        _.each(this.cards(), function(card) {
-            var _candidate_group = _.find(_groups, function(group) {
-               return group.canJoin(card);
+        if (this.cards().length >= 2) {
+            var _possible_moves = possible_combinations(this.cards(), 2);
+            _.each(_possible_moves, function(move) {
+                var _group = new Group(move);
+                if (_group.evaluate()) {
+                    _groups.push(_group);
+                }
             });
-
-            if (_candidate_group != null) {
-//                console.log("A candidate group exists for card ", card.toString());
-//                _candidate_group.add(card);
-            }
-            else
-            {
-//                console.log("A candidate group does not exist for card", card.toString());
-                //try and build your own group
-                _.each(self.cards(), function(target) {
-//                    //skip yourself
-                    if(!card.eq(target)) {
-//                        console.log(card.toString() + " can follow " + target.toString() + " : ", target.canFollow(card));
-                    }
-//                        if (target.canFollow(card)) {
-//                            //build a group
-//                            _groups.push(new Group([card,target]));
-//                        }
-//                    }
-                });
-            }
-        });
+        }
         return _groups;
     },
 

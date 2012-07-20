@@ -126,6 +126,46 @@ describe("Card rules:", function() {
 
 describe("Utility rules", function() {
 
+    it ("Should return an array of elements without the specified index", function() {
+
+        var arr = [1,2,3,4];
+        var res = exclude_from(arr,0); // [2,3,4]
+        expect(res[0]).toBe(2);
+        expect(res[1]).toBe(3);
+        expect(res[2]).toBe(4);
+
+        res = exclude_from(arr, 3); // [1,2,3]
+        expect(res[0]).toBe(1);
+        expect(res[1]).toBe(2);
+        expect(res[2]).toBe(3);
+
+        res = exclude_from(arr, 1); // [1,3,4]
+        expect(res[0]).toBe(1);
+        expect(res[1]).toBe(3);
+        expect(res[2]).toBe(4);
+
+        res = exclude_from(arr, 2); // [1,2,4]
+        expect(res[0]).toBe(1);
+        expect(res[1]).toBe(2);
+        expect(res[2]).toBe(4);
+
+    });
+
+//    it("Should decompose array elements into all combinations of at least 2", function() {
+//        var arr = [1,2,3,4];
+//        var _bd = break_down(arr,2);
+//        debugArray(_bd);
+//    });
+
+    it("Should return a stepped breakdown of an array", function() {
+        var arr = [1,2,3,4];
+        expect(step(arr,2).length).toBe(3);
+
+        arr = [1,2,3];
+        expect(step(arr,2).length).toBe(2);
+
+    });
+
     it("Decompose returns the possible combinations in array given the minimum length", function() {
 
         var arr = [1,2,3,4];
@@ -150,17 +190,25 @@ describe("Utility rules", function() {
         var arr = [1,2,3,4];
 
         var decomposed = decompose(arr,2);
-        var num_posibilities = 0;
+        var num_possibilities = 0;
         _.each(decomposed, function(a) {
-            num_posibilities += permute(a).length;
+            num_possibilities += permute(a).length;
         });
 
-        console.log("Total number of possibilities : ", num_posibilities);
-
-        expect(possible_combinations(arr,2).length).toBe(num_posibilities);
+        expect(possible_combinations(arr,2).length).toBe(num_possibilities);
     });
-});
 
+    it("The number of possible moves in a hand is equal to the number of possible combinations in the hand", function() {
+        var cards = [
+            new Card(SUITE_CLUBS, 3),
+            new Card(SUITE_DIAMONDS, 3),
+            new Card(SUITE_CLUBS, 5),
+            new Card(SUITE_HEARTS, 7)
+        ];
+
+        expect(possible_combinations(cards,2).length).toBe(32);
+    })
+});
 
 describe("Move rules:", function() {
     var hand, deck, computer, board;
@@ -263,8 +311,13 @@ describe("Move rules:", function() {
         });
 
 
-        it("A group does not exist if no cards in a hand can be played together even if they can follow each other", function () {
+        it("A group requires at least 2 cards in a hand", function() {
+            hand = buildHand([new Card(SUITE_CLUBS,3)]);
+            expect(hand.groups().length).toBe(0);
+        });
 
+
+        it("A group does not exist if no cards in a hand can be played together even if they can follow each other", function () {
             hand = buildHand([
                 new Card(SUITE_DIAMONDS, 5),
                 new Card(SUITE_DIAMONDS, 6)
@@ -272,19 +325,21 @@ describe("Move rules:", function() {
 
             expect(hand.groups().length).toBe(0);
         });
+
+        it("A group exists if more than one cards in a hand can be played together", function () {
+            hand = buildHand([
+                new Card(SUITE_DIAMONDS, 5),
+                new Card(SUITE_DIAMONDS, 6),
+                new Card(SUITE_SPADES, 6),
+                new Card(SUITE_SPADES, ACE)
+            ]);
+
+            expect(hand.groups().length).toBe(1);
+        });
+
     });
 
 
-//    it("A group exists if more than one cards in a hand can be played together", function() {
-//        hand = buildHand([
-//            new Card(SUITE_DIAMONDS, 5),
-//            new Card(SUITE_DIAMONDS, 6),
-//            new Card(SUITE_SPADES, 6),
-//            new Card(SUITE_SPADES, ACE)
-//        ]);
-//
-//        expect(hand.groups().length).toBe(1);
-//    });
 
 //    it("A group within a hand is unique", function() {
 //        var gp = new Group([
