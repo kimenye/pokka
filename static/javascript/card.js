@@ -54,6 +54,20 @@ var Group = JS.Class({
         this.cards = cards;
     },
 
+    evaluate: function() {
+        var _result = false;
+        var self = this;
+        var _preceding = _.first(self.cards);
+
+        var _idx = _.indexOf(self.cards, _preceding, false) + 1;
+        var _following = _.first(_.rest(self.cards, _idx));
+
+//        console.log(_following.toString() + " is after " + _preceding.toString());
+        _result = _preceding.canPlayTogetherWith(_following);
+
+        return _result;
+    },
+
     contains: function(card) {
         return _.find(this.cards, function(c) { return card.eq(c) }) != null;
     },
@@ -114,35 +128,39 @@ var Hand = JS.Class({
     groups: function() {
         var _groups = [];
         var self = this;
+
+
         _.each(this.cards(), function(card) {
             var _candidate_group = _.find(_groups, function(group) {
                return group.canJoin(card);
             });
 
             if (_candidate_group != null) {
-                _candidate_group.add(card);
+                console.log("A candidate group exists for card ", card.toString());
+//                _candidate_group.add(card);
             }
             else
             {
+                console.log("A candidate group does not exist for card", card.toString());
                 //try and build your own group
                 _.each(self.cards(), function(target) {
-                    //skip yourself
+//                    //skip yourself
                     if(!card.eq(target)) {
-                        if (target.canFollow(card)) {
-                            //build a group
-                            _groups.push(new Group([card,target]));
-                        }
+                        console.log(card.toString() + " can follow " + target.toString() + " : ", target.canFollow(card));
                     }
+//                        if (target.canFollow(card)) {
+//                            //build a group
+//                            _groups.push(new Group([card,target]));
+//                        }
+//                    }
                 });
             }
         });
-
-//        debugger;
-        _.each(_groups, function(group) {
-            console.log("Group: ", group.toString());
-//            debugger;
-        });
-
+//
+//        _.each(_groups, function(group) {
+//            console.log("Group: ", group.toString());
+//        });
+//
         return _groups;
     },
 
@@ -366,7 +384,7 @@ var Card = JS.Class({
      * Is this one of the K,Q,J cards?
      */
     isFaceCard:function () {
-        return this.rank == KING || this.rank == QUEEN || this.rank == JACK;
+        return this.rank == KING || this.isQueen() || this.rank == JACK;
     },
 
     isAce: function() {
@@ -374,7 +392,15 @@ var Card = JS.Class({
     },
 
     isSpecialCard: function() {
-        return (this.suite.symbol == JOKER || this.rank == 2 || this.rank == 3 || this.rank == 8);
+        return (this.suite.symbol == JOKER || this.rank == 2 || this.rank == 3 || this.isEight());
+    },
+
+    isQueen : function() {
+        return this.rank == QUEEN
+    },
+
+    isEight : function() {
+        return this.rank == 8;
     },
 
     canStart: function() {
@@ -395,12 +421,14 @@ var Card = JS.Class({
      * @param card
      */
     canFollow: function(card) {
-        var isSameSuite = (this.suite == card.suite);
-        var isSameRank = (this.rank == card.rank);
+        var isSameSuite = this.suite == card.suite;
+        var isSameRank = this.rank == card.rank;
 
         var can_follow = (isSameRank || isSameSuite || this.isAce());
         return can_follow;
     },
+
+
 
     /**
      * Can be joined with the card specified in a group
@@ -409,7 +437,17 @@ var Card = JS.Class({
      * @return {*}
      */
     canPlayTogetherWith: function(card) {
-        return this.canFollow(card) && this.rank == card.rank;
+        var _follow = this.canFollow(card);
+        var _sameRank = this.rank == card.rank;
+        var _sameSuite = this.suite == card.suite;
+
+//        if (isQ)
+        if (this.isQueen() || this.isEight()) {
+            //queen rules
+            return _follow && (_sameSuite || _sameRank);
+        }
+        else
+            return _follow && _sameRank;
     }
 });
 

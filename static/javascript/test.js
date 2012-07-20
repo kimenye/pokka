@@ -83,7 +83,41 @@ describe("Test Card rules:", function() {
         var six_d = new Card(SUITE_DIAMONDS, 6);
 
         expect(five_d.canPlayTogetherWith(six_d)).toBe(false);
-    })
+    });
+
+    it("An ace can not be in a move a non ace card", function() {
+        var five_d = new Card(SUITE_DIAMONDS, 5);
+        var ace_d = new Card(SUITE_DIAMONDS, ACE);
+
+        expect(five_d.canPlayTogetherWith(ace_d)).toBe(false);
+    });
+
+    describe("Queen rules", function() {
+
+        it("A queen can play together with another queen", function() {
+            var q_d = new Card(SUITE_DIAMONDS, QUEEN);
+            var q_s = new Card(SUITE_HEARTS, QUEEN);
+
+            expect(q_d.canPlayTogetherWith(q_s)).toBe(true);
+        });
+
+        it("A queen can play together with another ordinary card of the same suite", function() {
+            var q_d = new Card(SUITE_DIAMONDS, QUEEN);
+            var seven_d = new Card(SUITE_DIAMONDS, 7);
+            var seven_s = new Card(SUITE_CLUBS, 7);
+
+            expect(q_d.canPlayTogetherWith(seven_d)).toBe(true);
+            expect(q_d.canPlayTogetherWith(seven_s)).toBe(false);
+        });
+
+        it("An eight can act as a queen", function() {
+
+            var eight_d = new Card(SUITE_DIAMONDS, 8);
+            var seven_d = new Card(SUITE_DIAMONDS, 7);
+
+            expect(eight_d.canPlayTogetherWith(seven_d)).toBe(true);
+        });
+    });
 
 });
 
@@ -141,60 +175,95 @@ describe("Move rules:", function() {
         expect(hand.possibleMoves(new Card(SUITE_DIAMONDS, 10)).length).toBe(3);
     });
 
-    it("A group does not exist if no cards in a hand can be played together even if they can follow each other", function() {
+    describe("Group rules", function() {
 
-        hand = buildHand([
-            new Card(SUITE_DIAMONDS, 5),
-            new Card(SUITE_DIAMONDS, 6)
-        ]);
+        it("A groups is a series of cards that an be played together", function() {
+            var g = new Group([
+                new Card(SUITE_CLUBS, 6),
+                new Card(SUITE_DIAMONDS, 6)
+            ]);
 
-        expect(hand.groups().length).toBe(0);
+            expect(g.evaluate()).toBe(true);
+
+            g = new Group([
+                new Card(SUITE_CLUBS, 7),
+                new Card(SUITE_CLUBS, 8)
+            ]);
+
+            expect(g.evaluate()).toBe(false);
+
+            g = new Group([
+                new Card(SUITE_CLUBS, QUEEN),
+                new Card(SUITE_CLUBS, 7)
+            ]);
+
+            expect(g.evaluate()).toBe(true);
+
+            g = new Group([
+                new Card(SUITE_CLUBS, QUEEN),
+                new Card(SUITE_CLUBS, 7),
+                new Card(SUITE_DIAMONDS, 7)
+            ]);
+
+            expect(g.evaluate()).toBe(true);
+        });
     });
 
 
-    it("A group exists if more than one cards in a hand can be played together", function() {
-        hand = buildHand([
-            new Card(SUITE_DIAMONDS, 5),
-            new Card(SUITE_DIAMONDS, 6),
-            new Card(SUITE_SPADES, 6),
-            new Card(SPADES, ACE)
-        ]);
+//    it("A group exists if more than one cards in a hand can be played together", function() {
+//        hand = buildHand([
+//            new Card(SUITE_DIAMONDS, 5),
+//            new Card(SUITE_DIAMONDS, 6),
+//            new Card(SUITE_SPADES, 6),
+//            new Card(SUITE_SPADES, ACE)
+//        ]);
+//
+//        expect(hand.groups().length).toBe(1);
+//    });
 
-        expect(hand.groups().length).toBe(1);
-    });
+//    it("A group within a hand is unique", function() {
+//        var gp = new Group([
+//            new Card(SUITE_DIAMONDS, 5),
+//            new Card(SUITE_CLUBS, 5)
+//        ]);
+//
+//        expect(gp.contains(new Card(SUITE_CLUBS,5))).toBe(true);
+//        expect(gp.contains(new Card(SUITE_DIAMONDS,7))).toBe(false);
+//
+//        expect(gp.canJoin(new Card(SUITE_HEARTS, 5))).toBe(true);
+//        expect(gp.canJoin(new Card(SUITE_HEARTS, 4))).toBe(false);
+//    });
 
-    it("A group within a hand is unique", function() {
-        var gp = new Group([
-            new Card(SUITE_DIAMONDS, 5),
-            new Card(SUITE_CLUBS, 5)
-        ]);
 
-        expect(gp.contains(new Card(SUITE_CLUBS,5))).toBe(true);
-        expect(gp.contains(new Card(SUITE_DIAMONDS,7))).toBe(false);
+//    it("A group does not exist if no cards in a hand can be played together even if they can follow each other", function() {
+//
+//        hand = buildHand([
+//            new Card(SUITE_DIAMONDS, 5),
+//            new Card(SUITE_DIAMONDS, 6)
+//        ]);
+//
+//        expect(hand.groups().length).toBe(0);
+//    });
+//
+//    it("An ace can't join a group unless it is with another ace", function() {
+//       var gp = new Group([
+//            new Card(SUITE_DIAMONDS, 5),
+//            new Card(SUITE_CLUBS, 5)
+//       ]);
+//
+//        expect(gp.canJoin(new Card(SUITE_CLUBS,ACE))).toBe(false);
+//    });
 
-        expect(gp.canJoin(new Card(SUITE_HEARTS, 5))).toBe(true);
-        expect(gp.canJoin(new Card(SUITE_HEARTS, 4))).toBe(false);
-    });
-
-    it("An ace can't join a group unless it is with another ace", function() {
-       var gp = new Group([
-            new Card(SUITE_DIAMONDS, 5),
-            new Card(SUITE_CLUBS, 5)
-       ]);
-
-        expect(gp.canJoin(new Card(SUITE_CLUBS,ACE))).toBe(false);
-    });
-
-    it("multiple moves are possible by grouping cards", function() {
-        hand = buildHand([
-            new Card(SUITE_DIAMONDS, 5),
-            new Card(SUITE_DIAMONDS, 6),
-            new Card(SUITE_SPADES, 6),
-            new Card(SPADES, ACE)
-        ]);
-
-        expect(hand.possibleMoves(new Card(SUITE_DIAMONDS, 10)).length).toBe(4);
-    });
+//    it("multiple moves are possible by grouping cards", function() {
+//        hand = buildHand([
+//            new Card(SUITE_DIAMONDS, 5),
+//            new Card(SUITE_DIAMONDS, 6),
+//            new Card(SUITE_SPADES, 6),
+//            new Card(SPADES, ACE)
+//        ]);
+//
+//        expect(hand.possibleMoves(new Card(SUITE_DIAMONDS, 10)).length).toBe(4);
+//    });
 })
 
 describe("Game starting mechanics:", function() {
