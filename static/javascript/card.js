@@ -60,10 +60,14 @@ var Group = JS.Class({
         var _preceding = _.first(self.cards);
 
         var _idx = _.indexOf(self.cards, _preceding, false) + 1;
-        var _following = _.first(_.rest(self.cards, _idx));
-
-//        console.log(_following.toString() + " is after " + _preceding.toString());
-        _result = _preceding.canPlayTogetherWith(_following);
+        while(_idx < self.cards.length) {
+            var _following = _.first(_.rest(self.cards, _idx));
+            _result = _preceding.canPlayTogetherWith(_following);
+            if (!_result)
+                break;
+            _idx++;
+            _preceding = _following;
+        }
 
         return _result;
     },
@@ -441,9 +445,7 @@ var Card = JS.Class({
         var _sameRank = this.rank == card.rank;
         var _sameSuite = this.suite == card.suite;
 
-//        if (isQ)
         if (this.isQueen() || this.isEight()) {
-            //queen rules
             return _follow && (_sameSuite || _sameRank);
         }
         else

@@ -29,7 +29,7 @@ function buildHand(cards) {
     return hand;
 }
 
-describe("Test Card rules:", function() {
+describe("Card rules:", function() {
 
     var deck;
 
@@ -118,7 +118,6 @@ describe("Test Card rules:", function() {
             expect(eight_d.canPlayTogetherWith(seven_d)).toBe(true);
         });
     });
-
 });
 
 
@@ -177,7 +176,7 @@ describe("Move rules:", function() {
 
     describe("Group rules", function() {
 
-        it("A groups is a series of cards that an be played together", function() {
+        it("A group is a series of cards that an be played together", function() {
             var g = new Group([
                 new Card(SUITE_CLUBS, 6),
                 new Card(SUITE_DIAMONDS, 6)
@@ -198,14 +197,39 @@ describe("Move rules:", function() {
             ]);
 
             expect(g.evaluate()).toBe(true);
+        });
 
-            g = new Group([
+
+        it("Any non playable cards in a set makes the group invalid", function() {
+            var g = new Group([
+                new Card(SUITE_CLUBS, QUEEN),
+                new Card(SUITE_CLUBS, 7),
+                new Card(SUITE_DIAMONDS, 8)
+            ]);
+
+            expect(g.evaluate()).toBe(false);
+        });
+
+        it("All consecutive cards must be playable for the cards to form a group", function() {
+            var g = new Group([
                 new Card(SUITE_CLUBS, QUEEN),
                 new Card(SUITE_CLUBS, 7),
                 new Card(SUITE_DIAMONDS, 7)
             ]);
 
-            expect(g.evaluate()).toBe(true);
+            expect(g.evaluate()).toBe(true)
+
+        });
+
+
+        it("A group does not exist if no cards in a hand can be played together even if they can follow each other", function () {
+
+            hand = buildHand([
+                new Card(SUITE_DIAMONDS, 5),
+                new Card(SUITE_DIAMONDS, 6)
+            ]);
+
+            expect(hand.groups().length).toBe(0);
         });
     });
 
@@ -235,15 +259,6 @@ describe("Move rules:", function() {
 //    });
 
 
-//    it("A group does not exist if no cards in a hand can be played together even if they can follow each other", function() {
-//
-//        hand = buildHand([
-//            new Card(SUITE_DIAMONDS, 5),
-//            new Card(SUITE_DIAMONDS, 6)
-//        ]);
-//
-//        expect(hand.groups().length).toBe(0);
-//    });
 //
 //    it("An ace can't join a group unless it is with another ace", function() {
 //       var gp = new Group([
