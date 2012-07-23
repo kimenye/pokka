@@ -45,6 +45,10 @@ var Move = JS.Class({
 
     construct: function(cards) {
         this.cards = cards;
+    },
+
+    first: function() {
+        return _.first(this.cards);
     }
 });
 
@@ -55,6 +59,10 @@ var Group = JS.Class({
     },
 
     evaluate: function() {
+
+        if (this.cards.length < 2)
+            return false;
+
         var _result = false;
         var self = this;
         var _preceding = _.first(self.cards);
@@ -72,7 +80,6 @@ var Group = JS.Class({
         var cs = "";
         _.each(self.cards, function(c) { cs += c.toString() + " " });
 
-//        console.log("Group: " + cs + " : ", _result);
         return _result;
     },
 
@@ -95,7 +102,6 @@ var Group = JS.Class({
     },
 
     toString: function() {
-//        debugger;
         var self = this;
         var _str = "[";
         _.each(this.cards, function(card,idx) { _str += card.toString() + (idx < self.cards.length ? " , " : "" ) });
@@ -133,19 +139,34 @@ var Hand = JS.Class({
             return [1.0, 0.25];
     },
 
-    groups: function() {
+    groups: function(top_card) {
         var _groups = [];
         var self = this;
 
-        if (this.cards().length >= 2) {
-            var _possible_moves = possible_combinations(this.cards(), 2);
-            _.each(_possible_moves, function(move) {
-                var _group = new Group(move);
-                if (_group.evaluate()) {
-                    _groups.push(_group);
+        if (self.cards().length >= 2 && top_card != null && self.possibleMoves(top_card).length > 0) {
+            var _moves = self.possibleMoves(top_card);
+
+            _.each(_moves, function(move, idx) {
+
+                var _c = move.first();
+                var _gp = new Group([_c]);
+                _.each(self.cards(), function(card, idx) {
+
+                    if (!card.eq(_c)) {
+                        //can the card join the group
+                        if (_gp.canJoin(card)) {
+                            //then add it to the group
+                            _gp.cards.push(card);
+                        }
+                    }
+                });
+
+                if (_gp.evaluate()) {
+                    _groups.push(_gp);
                 }
             });
         }
+
         return _groups;
     },
 

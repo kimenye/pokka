@@ -316,6 +316,16 @@ describe("Move rules:", function() {
             expect(hand.groups().length).toBe(0);
         });
 
+        it("A group can only be evaluated if the top card in on the deck is provided", function() {
+            hand = buildHand([
+                new Card(SUITE_SPADES, 4),
+                new Card(SUITE_CLUBS, 4),
+                new Card(SUITE_HEARTS, 3),
+                new Card(SUITE_SPADES, 5)
+            ]);
+            expect(hand.groups().length).toBe(0);
+        });
+
 
         it("A group does not exist if no cards in a hand can be played together even if they can follow each other", function () {
             hand = buildHand([
@@ -328,13 +338,13 @@ describe("Move rules:", function() {
 
         it("A group exists if more than one cards in a hand can be played together", function () {
             hand = buildHand([
-                new Card(SUITE_DIAMONDS, 5),
-                new Card(SUITE_DIAMONDS, 6),
-                new Card(SUITE_SPADES, 6),
-                new Card(SUITE_SPADES, ACE)
+                new Card(SUITE_SPADES, 4),
+                new Card(SUITE_CLUBS, 4),
+                new Card(SUITE_HEARTS, 3),
+                new Card(SUITE_SPADES, 5)
             ]);
 
-            expect(hand.groups().length).toBe(1);
+            expect(hand.groups(new Card(SUITE_SPADES, 6)).length).toBe(1);
         });
 
     });
