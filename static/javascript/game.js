@@ -13,33 +13,53 @@ var Game = JS.Class({
         this.computer = computer_player;
         this.board = board;
         this.deck = deck;
+        this.user.initGame(this);
+        this.computer.initGame(this);
 
         this.whoseTurn = ko.computed(function() {
-            var turn = _.find([self.user, self.computer], function(player) {
-                return player.isTurnToPlay()
-            });
+            var _turn = self.currentTurn()
 
-            if (turn != null)
-                return turn.name.toUpperCase() + "'S TURN TO PLAY";
+            if (_turn != null)
+                return _turn.name.toUpperCase() + "'S TURN TO PLAY";
             else
                 return "GAME NOT STARTED"
         });
     },
 
-    startGame: function() {
+    currentTurn : function() {
+        var _turn = _.find([this.user, this.computer], function(player) {
+            return player.isTurnToPlay()
+        });
+        return _turn;
+    },
+
+    startGame: function(debug) {
         //randomly pick which user gets to start
         //TODO: implement correct coin toss
-        //TODO: for now make the computer start coz it needs to be trained
-        var playerWinsToss = Math.floor( Math.random() * 2 ) == 1;
-        if (playerWinsToss)
-            this.giveTurnTo(this.user, this.computer);
-        else
+        //TODO: for now make the computer start coz it needs to be trained based on the debug property
+        if (debug) {
             this.giveTurnTo(this.computer, this.user);
+        } else {
+            var playerWinsToss = Math.floor( Math.random() * 2 ) == 1;
+            if (playerWinsToss)
+                this.giveTurnTo(this.user, this.computer);
+            else
+                this.giveTurnTo(this.computer, this.user);
+        }
     },
 
     giveTurnTo: function(player, other) {
         player.isTurnToPlay(true);
         other.isTurnToPlay(false);
+    },
+
+    finishTurn : function(player) {
+        //TODO: Handle multiplayer
+        if (this.currentTurn().isBot())  {
+            this.giveTurnTo(this.user,this.computer);
+        }
+        else
+            this.giveTurnTo(this.computer, this.user);
     }
 });
 
@@ -55,6 +75,10 @@ var Board = JS.Class({
 
     start: function(openingCard) {
         this.drawCard(openingCard);
+    },
+
+    topCard: function() {
+        return _.last(this.cards());
     },
 
     drawCard: function(card) {
@@ -84,9 +108,56 @@ var Player = JS.Class({
     construct:function (name, type) {
         var self = this;
         this.name = name;
+        this.played = false;
         this.hand = ko.observable(new Hand(type));
         this.type = type;
         this.isTurnToPlay = ko.observable(false);
+        this.board = null;
+        this.game = null;
+        this.deck = null;
+        this.isBot = function() {
+            return this.type == COMPUTER;
+        }
+
+//        this.isTurnToPlay.subscribe(function(nevValue) {
+//            debugger;
+//            if (nevValue == true) {
+//                this.play();
+//            }
+//        }, this);
+
+        this.play = function() {
+            if(self.isBot() && self.hasCards()){
+                var _card = self.board.topCard();
+                if (!self.hand().canPlay(_card)) {
+                    self.pick();
+                }
+                else {
+//                    debugger;
+                    var _best_group = self.hand().bestGroup(_card);
+
+                    if (_best_group != null) {
+
+                        _.each(_best_group.cards, function(card) {
+                            self.board.drawCard(card);
+                            self.hand().removeCard(card);
+                        });
+                    }
+                }
+
+            }
+            this.game.finishTurn(this);
+        };
+
+        this.initGame = function(game) {
+            this.game = game;
+            this.board = game.board;
+            this.deck = game.deck;
+        }
+
+        this.numCards = ko.computed(function() {
+           return self.hand().cards().length;
+        });
 
         this.hasCards = ko.computed(function() {
             return !self.hand().isEmpty();
@@ -99,6 +170,19 @@ var Player = JS.Class({
 
     give:function (card) {
         this.hand().add(card);
+    },
+
+    pick: function() {
+        if (this.deck != null) {
+            var card = this.deck.deal();
+            this.give(card);
+        }
+
+        this.played = true;
+    },
+
+    hasPlayed: function() {
+        return this.played;
     },
 
     canPlay: function() {

@@ -45,6 +45,18 @@ describe("Card rules:", function() {
        expect(deck.cards.length).toBe(54);
     });
 
+    it("A card can be removed from a hand", function() {
+        var hand = buildHand([
+            new Card(SUITE_CLUBS,4),
+            new Card(SUITE_CLUBS,5)
+        ]);
+
+        expect(hand.size()).toBe(2);
+        hand.removeCard(new Card(SUITE_CLUBS, 5));
+
+        expect(hand.size()).toBe(1);
+    })
+
     it("Game cannot start game with invalid card", function() {
         var starting_card = deck.cut();
         expect(starting_card.isFaceCard()).toBe(false);
@@ -347,47 +359,23 @@ describe("Move rules:", function() {
             expect(hand.groups(new Card(SUITE_SPADES, 6)).length).toBe(1);
         });
 
+        it("A group with more cards is more valuable than one with less", function() {
+            hand = buildHand([
+                new Card(SUITE_SPADES, 4),
+                new Card(SUITE_CLUBS, 4),
+                new Card(SUITE_HEARTS, 4),
+                new Card(SUITE_SPADES, 5),
+                new Card(SUITE_HEARTS, 5)
+            ]);
+
+            expect(hand.groups(new Card(SUITE_SPADES, 6)).length).toBe(2);
+            expect(hand.bestGroup(new Card(SUITE_SPADES, 6)).score()).toBe(3);
+        });
+
     });
+});
 
-
-
-//    it("A group within a hand is unique", function() {
-//        var gp = new Group([
-//            new Card(SUITE_DIAMONDS, 5),
-//            new Card(SUITE_CLUBS, 5)
-//        ]);
-//
-//        expect(gp.contains(new Card(SUITE_CLUBS,5))).toBe(true);
-//        expect(gp.contains(new Card(SUITE_DIAMONDS,7))).toBe(false);
-//
-//        expect(gp.canJoin(new Card(SUITE_HEARTS, 5))).toBe(true);
-//        expect(gp.canJoin(new Card(SUITE_HEARTS, 4))).toBe(false);
-//    });
-
-
-//
-//    it("An ace can't join a group unless it is with another ace", function() {
-//       var gp = new Group([
-//            new Card(SUITE_DIAMONDS, 5),
-//            new Card(SUITE_CLUBS, 5)
-//       ]);
-//
-//        expect(gp.canJoin(new Card(SUITE_CLUBS,ACE))).toBe(false);
-//    });
-
-//    it("multiple moves are possible by grouping cards", function() {
-//        hand = buildHand([
-//            new Card(SUITE_DIAMONDS, 5),
-//            new Card(SUITE_DIAMONDS, 6),
-//            new Card(SUITE_SPADES, 6),
-//            new Card(SPADES, ACE)
-//        ]);
-//
-//        expect(hand.possibleMoves(new Card(SUITE_DIAMONDS, 10)).length).toBe(4);
-//    });
-})
-
-describe("Game starting mechanics:", function() {
+describe("Game play mechanics:", function() {
 
     var computerPlayer, userPlayer, board, game, deck;
 
@@ -396,7 +384,7 @@ describe("Game starting mechanics:", function() {
         userPlayer = new UserPlayer("nobody");
         board = new Board();
         deck = new Deck();
-        game = new Game(computerPlayer,userPlayer, board, deck);
+        game = new Game(userPlayer,computerPlayer, board, deck);
     });
 
     afterEach(function() {
@@ -405,20 +393,88 @@ describe("Game starting mechanics:", function() {
         board = null;
         game = null;
         deck = null;
-    })
+    });
 
 
-    it("chooses a starter of a game randomly", function() {
+    it("It chooses a starter of a game randomly", function() {
         game.startGame();
         //TODO: How do you test random starting of game?
     });
 
-    it("cannot play when its not players turn", function() {
+    it("A player cannot play when its not players turn", function() {
         game.startGame();
         var isComputersTurn = computerPlayer.isTurnToPlay();
         var isPlayersTurn = userPlayer.isTurnToPlay();
 
         expect(isComputersTurn == isPlayersTurn).toBe(false);
+    });
+
+    it("When the game is started with debug its the computers turn to play", function() {
+        game.startGame(true);
+        expect(computerPlayer.isTurnToPlay()).toBe(true);
+    });
+
+    it("A boards top card is the last card played", function() {
+        expect(board.topCard()).toBeUndefined();
+        board.start(new Card(SUITE_HEARTS, QUEEN));
+        expect(board.topCard().eq(new Card(SUITE_HEARTS, QUEEN))).toBe(true);
+    });
+
+    it("When its a players turn to play and the player cant play, they pick a card from the deck", function() {
+        game.startGame(true);
+        computerPlayer.give(new Card(SUITE_CLUBS,4));
+        computerPlayer.give(new Card(SUITE_DIAMONDS,4));
+        computerPlayer.give(new Card(SUITE_CLUBS,4));
+        computerPlayer.give(new Card(SUITE_SPADES,5));
+
+        expect(computerPlayer.hasCards()).toBe(true);
+        board.start(new Card(SUITE_HEARTS, QUEEN));
+        expect(board.topCard() != null).toBe(true);
+
+        expect(computerPlayer.numCards()).toBe(4);
+        expect(computerPlayer.hasCards()).toBe(true);
+        game.giveTurnTo(computerPlayer,userPlayer);
+//        computerPlayer.isTurnToPlay(true);
+        computerPlayer.play();
+
+        expect(computerPlayer.numCards()).toBe(5);
+        expect(userPlayer.isTurnToPlay()).toBe(true);
+//        waitsFor(function() {
+//            return computerPlayer.hasPlayed();
+//        }, "Computer never played on time", 5000);
+//
+//        runs(function() {
+//            expect(computerPlayer.numCards()).toBe(5);
+//        });
+    });
+
+    it("When its the computers turn to play it plays and the turn passes to the other player", function() {
+        game.startGame(true);
+
+        computerPlayer.give(new Card(SUITE_SPADES,4));
+        computerPlayer.give(new Card(SUITE_DIAMONDS,4));
+        computerPlayer.give(new Card(SUITE_CLUBS,4));
+        computerPlayer.give(new Card(SUITE_SPADES,5));
+
+        board.start(new Card(SUITE_SPADES, 6));
+
+//        hand = buildHand([
+//            new Card(SUITE_SPADES, 4),
+//            new Card(SUITE_CLUBS, 4),
+//            new Card(SUITE_HEARTS, 4),
+//            new Card(SUITE_SPADES, 5),
+//            new Card(SUITE_HEARTS, 5)
+//        ]);
+
+//        expect(hand.groups(new Card(SUITE_SPADES, 6)).length).toBe(2);
+//        expect()
+        expect(computerPlayer.hand().groups(new Card(SUITE_SPADES, 6)).length).toBe(1);
+        //give the computer the turn to play
+        computerPlayer.isTurnToPlay(true);
+        computerPlayer.play();
+
+        expect(computerPlayer.numCards()).toBe(1);
+        expect(board.topCard().eq(new Card(SUITE_CLUBS,4))).toBe(true);
     });
 });
 

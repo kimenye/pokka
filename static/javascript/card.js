@@ -83,6 +83,11 @@ var Group = JS.Class({
         return _result;
     },
 
+    score: function() {
+        //TODO: A better ranking for groups
+        return this.cards.length;
+    },
+
     contains: function(card) {
         return _.find(this.cards, function(c) { return card.eq(c) }) != null;
     },
@@ -137,6 +142,21 @@ var Hand = JS.Class({
             return [0.25, 0.0625];
         else
             return [1.0, 0.25];
+    },
+
+    bestGroup:  function(top_card) {
+        var _groups = this.groups(top_card);
+        var _sorted = _.sortBy(_groups, function(group) {
+           return group.score();
+        });
+        return _.last(_sorted);
+    },
+
+    removeCard: function(card) {
+        var _without = _.reject(this.cards(), function(c) {
+            return card.eq(c);
+        });
+        this.cards(_without);
     },
 
     groups: function(top_card) {
@@ -207,7 +227,11 @@ var Hand = JS.Class({
     },
 
     isEmpty: function() {
-        return this.cards().length < 1;
+        return this.size() < 1;
+    },
+
+    size: function() {
+        return this.cards().length;
     }
 });
 
