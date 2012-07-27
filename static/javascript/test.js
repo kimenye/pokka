@@ -433,7 +433,6 @@ describe("Game play mechanics:", function() {
         expect(computerPlayer.numCards()).toBe(4);
         expect(computerPlayer.hasCards()).toBe(true);
         game.giveTurnTo(computerPlayer,userPlayer);
-//        computerPlayer.isTurnToPlay(true);
         computerPlayer.play();
 
         expect(computerPlayer.numCards()).toBe(5);
@@ -478,6 +477,18 @@ describe("Game play mechanics:", function() {
         expect(userPlayer.numCards()).toBe(4);
         userPlayer.pick(1);
         expect(userPlayer.numCards()).toBe(5);
+    });
+
+    it("When a player picks a card from the deck it becomes the other players turn to play", function() {
+        game.startGame(true);
+        expect(computerPlayer.isTurnToPlay()).toBe(true);
+        expect(userPlayer.isTurnToPlay()).toBe(false);
+        computerPlayer.pick(1);
+        expect(userPlayer.isTurnToPlay()).toBe(true);
+        expect(computerPlayer.isTurnToPlay()).toBe(false)
+        userPlayer.pick(1);
+        expect(computerPlayer.isTurnToPlay()).toBe(true);
+        expect(userPlayer.isTurnToPlay()).toBe(false);
     });
 
     it("A hands best single move is the first one that can be played", function() {

@@ -9,13 +9,12 @@ $(document).ready(function () {
         self.user = ko.observable(new UserPlayer("Player 1"));
         self.inProgress = ko.observable(false);
         self.board = ko.observable(new Board());
-        self.game = ko.observable(new Game(self.user(), self.computer, self.board() ));
-
-
         if (self.deck() == null) {
             self.deck(new Deck());
             self.deck().display();
         }
+
+        self.game = ko.observable(new Game(self.user(), self.computer, self.board(), self.deck()));
 
         self.playerCanMove = ko.computed(function() {
             var hasSelections = self.user().hasSelections();
@@ -43,8 +42,9 @@ $(document).ready(function () {
         }
 
         self.move = function() {
-            if (self.user.hasSelections()) {
-
+            if (this.user().hasSelections() &&
+                this.user().hand().canPlaySelections(this.board().topCard()) ) {
+                this.user().play();
             }
         }
 

@@ -143,11 +143,17 @@ var Player = JS.Class({
             this.game.log("Player " + this.name + " : " + text);
         },
 
+        this.move = function(card) {
+            self.board.drawCard(card);
+            self.hand().removeCard(card);
+            self.log("Played card " + card.toString());
+        }
+
         this.play = function() {
-            if(self.isBot() && self.hasCards()){
+            if(this.isBot() && this.hasCards()){
                 var _card = self.board.topCard();
                 if (!self.hand().canPlay(_card)) {
-                    self.pick(1);
+                    self.pick(1,true);
                 }
                 else {
 //                    Paul simon Love of the common people 1.09
@@ -156,21 +162,24 @@ var Player = JS.Class({
                     if (_best_group != null) {
 
                         _.each(_best_group.cards, function(card) {
-                            self.board.drawCard(card);
-                            self.log("Played card " + card.toString());
-                            self.hand().removeCard(card);
+                            self.move(card);
                         });
                     }
                     else if (_best_move != null)
                     {
-                        self.log("Played card " + _best_move.toString());
-                        self.board.drawCard(_best_move);
-                        self.hand().removeCard(_best_move);
+                        this.move(_best_move);
                     }
                 }
                 self.hand().redrawCards();
 
                 this.game.finishTurn(this);
+            }
+            else {
+                _.each(this.hand().getSelectedCards(), function(card) {
+                    this.move(card);
+                    this.game.finishTurn(this);
+                },this);
+                this.hand().redrawCards();
             }
         };
 
@@ -197,7 +206,7 @@ var Player = JS.Class({
         this.hand().add(card);
     },
 
-    pick: function(num_cards) {
+    pick: function(num_cards, dont_finish_turn) {
         if (this.deck != null) {
             for(var x=0;x<num_cards;x++)
             {
@@ -206,9 +215,11 @@ var Player = JS.Class({
             }
         }
         this.log("picked " + num_cards + " cards");
-
-
         this.played = true;
+
+        if (_.isUndefined(dont_finish_turn)) {
+            this.game.finishTurn(this);
+        }
     },
 
     hasPlayed: function() {
