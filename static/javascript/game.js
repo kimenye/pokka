@@ -119,21 +119,19 @@ var Player = JS.Class({
             return this.type == COMPUTER;
         }
 
-//        this.isTurnToPlay.subscribe(function(nevValue) {
-//            debugger;
-//            if (nevValue == true) {
-//                this.play();
-//            }
-//        }, this);
+        this.isTurnToPlay.subscribe(function(nevValue) {
+            if (nevValue == true) {
+                this.play();
+            }
+        }, this);
 
         this.play = function() {
             if(self.isBot() && self.hasCards()){
                 var _card = self.board.topCard();
                 if (!self.hand().canPlay(_card)) {
-                    self.pick();
+                    self.pick(1);
                 }
                 else {
-//                    debugger;
                     var _best_group = self.hand().bestGroup(_card);
 
                     if (_best_group != null) {
@@ -144,9 +142,8 @@ var Player = JS.Class({
                         });
                     }
                 }
-
+                this.game.finishTurn(this);
             }
-            this.game.finishTurn(this);
         };
 
         this.initGame = function(game) {
@@ -172,10 +169,13 @@ var Player = JS.Class({
         this.hand().add(card);
     },
 
-    pick: function() {
+    pick: function(num_cards) {
         if (this.deck != null) {
-            var card = this.deck.deal();
-            this.give(card);
+            for(var x=0;x<num_cards;x++)
+            {
+                var card = this.deck.deal();
+                this.give(card);
+            }
         }
 
         this.played = true;

@@ -51,7 +51,7 @@
           %button.btn.btn-large.btn-success#btn-move{'data-bind' => 'click: move, enable: playerCanMove() '} Move
         .row
           %br
-          %button.btn.btn-large#btn-move{'data-bind' => 'enable: playerCanPlay()'} Pick
+          %button.btn.btn-large#btn-move{'data-bind' => 'enable: playerCanPlay(), click: pick'} Pick
     .span1
       .container
         .row

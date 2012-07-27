@@ -37,9 +37,13 @@ $(document).ready(function () {
         }
 
         self.move = function() {
-            if (user.hasSelections()) {
+            if (self.user.hasSelections()) {
 
             }
+        }
+
+        self.pick = function() {
+            self.user.pick(1);
         }
 
         self.deal = function() {
@@ -53,6 +57,7 @@ $(document).ready(function () {
             var starting_card = self.deck().cut();
             self.board().start(starting_card);
 
+//            self.game().startGame(true);
             self.game().startGame();
         }
     }

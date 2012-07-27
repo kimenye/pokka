@@ -458,16 +458,6 @@ describe("Game play mechanics:", function() {
 
         board.start(new Card(SUITE_SPADES, 6));
 
-//        hand = buildHand([
-//            new Card(SUITE_SPADES, 4),
-//            new Card(SUITE_CLUBS, 4),
-//            new Card(SUITE_HEARTS, 4),
-//            new Card(SUITE_SPADES, 5),
-//            new Card(SUITE_HEARTS, 5)
-//        ]);
-
-//        expect(hand.groups(new Card(SUITE_SPADES, 6)).length).toBe(2);
-//        expect()
         expect(computerPlayer.hand().groups(new Card(SUITE_SPADES, 6)).length).toBe(1);
         //give the computer the turn to play
         computerPlayer.isTurnToPlay(true);
@@ -475,6 +465,20 @@ describe("Game play mechanics:", function() {
 
         expect(computerPlayer.numCards()).toBe(1);
         expect(board.topCard().eq(new Card(SUITE_CLUBS,4))).toBe(true);
+    });
+
+    it("When a player picks a card there is one less card in the deck and the players cards increase", function() {
+       game.startGame();
+
+        userPlayer.isTurnToPlay(true);
+        userPlayer.give(new Card(SUITE_SPADES, 8));
+        userPlayer.give(new Card(SUITE_DIAMONDS, 4));
+        userPlayer.give(new Card(SUITE_DIAMONDS, 5));
+        userPlayer.give(new Card(SUITE_SPADES, KING));
+
+        expect(userPlayer.numCards()).toBe(4);
+        userPlayer.pick(1);
+        expect(userPlayer.numCards()).toBe(5);
     });
 });
 
