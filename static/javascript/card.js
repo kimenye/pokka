@@ -190,6 +190,14 @@ var Hand = JS.Class({
         return _groups;
     },
 
+    bestSingleMove : function(top_card) {
+        var _moves = this.possibleMoves(top_card);
+        if (_moves.length > 0) {
+            return _.first(_moves).first();
+        }
+        return null;
+    },
+
     possibleMoves: function(top_card) {
         //first check if there are any possible moves
         var self = this;

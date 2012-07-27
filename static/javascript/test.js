@@ -479,6 +479,32 @@ describe("Game play mechanics:", function() {
         userPlayer.pick(1);
         expect(userPlayer.numCards()).toBe(5);
     });
+
+    it("A hands best single move is the first one that can be played", function() {
+        hand = buildHand([new Card(SUITE_CLUBS,6),
+                        new Joker(1),
+                        new Card(SUITE_DIAMONDS,7),
+                        new Card(SUITE_HEARTS,5)]);
+
+        expect(hand.bestSingleMove(new Card(SUITE_DIAMONDS,9)).eq(new Card(SUITE_DIAMONDS, 7))).toBe(true);
+    });
+
+    it("When a player does not have any groups they play a single card", function() {
+        game.startGame(true);
+
+        board.start(new Card(SUITE_DIAMONDS, 9));
+
+        computerPlayer.give(new Card(SUITE_CLUBS,6));
+        computerPlayer.give(new Joker(1));
+        computerPlayer.give(new Card(SUITE_DIAMONDS,7));
+        computerPlayer.give(new Card(SUITE_HEARTS,5));
+
+        computerPlayer.isTurnToPlay(true);
+        computerPlayer.play();
+
+        expect(computerPlayer.numCards()).toBe(3);
+        expect(board.topCard().eq(new Card(SUITE_DIAMONDS, 7))).toBe(true);
+    });
 });
 
 

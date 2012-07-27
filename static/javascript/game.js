@@ -139,6 +139,10 @@ var Player = JS.Class({
             }
         }, this);
 
+        this.log = function(text) {
+            this.game.log("Player " + this.name + " : " + text);
+        },
+
         this.play = function() {
             if(self.isBot() && self.hasCards()){
                 var _card = self.board.topCard();
@@ -146,16 +150,25 @@ var Player = JS.Class({
                     self.pick(1);
                 }
                 else {
+//                    Paul simon Love of the common people 1.09
                     var _best_group = self.hand().bestGroup(_card);
-
+                    var _best_move = self.hand().bestSingleMove(_card);
                     if (_best_group != null) {
 
                         _.each(_best_group.cards, function(card) {
                             self.board.drawCard(card);
+                            self.log("Played card " + card.toString());
                             self.hand().removeCard(card);
                         });
                     }
+                    else if (_best_move != null)
+                    {
+                        self.log("Played card " + _best_move.toString());
+                        self.board.drawCard(_best_move);
+                        self.hand().removeCard(_best_move);
+                    }
                 }
+
                 this.game.finishTurn(this);
             }
         };
@@ -191,6 +204,8 @@ var Player = JS.Class({
                 this.give(card);
             }
         }
+        this.log("picked " + num_cards + " cards");
+
 
         this.played = true;
     },
