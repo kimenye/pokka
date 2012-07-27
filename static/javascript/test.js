@@ -505,6 +505,55 @@ describe("Game play mechanics:", function() {
         expect(computerPlayer.numCards()).toBe(3);
         expect(board.topCard().eq(new Card(SUITE_DIAMONDS, 7))).toBe(true);
     });
+
+    it("A player can only move cards which they have selected if they are valid", function() {
+
+        var selected = new Card(SUITE_DIAMONDS,7);
+        selected.selected(true);
+
+        var unselected = new Card(SUITE_HEARTS,5);
+        unselected.selected(false);
+        hand = buildHand([new Card(SUITE_CLUBS,6),
+            new Joker(1),
+            selected,
+            unselected]);
+
+        expect(hand.numSelected()).toBe(1);
+        expect(hand.canPlaySelections(new Card(SUITE_DIAMONDS,9))).toBe(true);
+
+        selected.selected(false);
+        unselected.selected(true);
+
+
+        expect(hand.numSelected()).toBe(1);
+        expect(hand.canPlaySelections(new Card(SUITE_DIAMONDS,9))).toBe(false);
+
+        unselected.selected(false);
+        expect(hand.numSelected()).toBe(0);
+        expect(hand.canPlaySelections(new Card(SUITE_DIAMONDS,9))).toBe(false);
+    });
+
+    it("A player can only move a selected group if they are valid", function() {
+        hand = buildHand([
+            new Card(SUITE_SPADES, 4),
+            new Card(SUITE_CLUBS, 4),
+            new Card(SUITE_HEARTS, 3),
+            new Card(SUITE_SPADES, 5)
+        ]);
+
+        hand.cards()[0].selected(true);
+        hand.cards()[1].selected(true);
+
+        expect(hand.numSelected()).toBe(2);
+        expect(hand.canPlaySelections(new Card(SUITE_HEARTS, 4))).toBe(true);
+
+        hand.cards()[0].selected(true);
+        hand.cards()[2].selected(true);
+        hand.cards()[1].selected(false);
+
+        expect(hand.numSelected()).toBe(2);
+        expect(hand.canPlaySelections(new Card(SUITE_HEARTS, 4))).toBe(false);
+    });
 });
 
 

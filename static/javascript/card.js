@@ -131,6 +131,10 @@ var Hand = JS.Class({
         this.getSelectedCards = ko.computed(function() {
             return _.filter(self.cards(), function(card) { return card.selected() });
         });
+
+        this.numSelected = ko.computed(function() {
+            return self.getSelectedCards().length;
+        })
     },
 
     /**
@@ -190,6 +194,18 @@ var Hand = JS.Class({
         return _groups;
     },
 
+    canPlaySelections : function(top_card) {
+        if (this.numSelected() > 1) {
+            var _cards = new Group(this.getSelectedCards());
+            return _cards.evaluate();
+        }
+        else if (this.numSelected() == 1) {
+            var _card = _.first(this.getSelectedCards());
+            return _card.canFollow(top_card);
+        }
+        return false;
+    },
+
     bestSingleMove : function(top_card) {
         var _moves = this.possibleMoves(top_card);
         if (_moves.length > 0) {
@@ -214,10 +230,19 @@ var Hand = JS.Class({
         return this.possibleMoves(top_card).length > 0;
     },
 
-    add:function (card) {
-        this.cards.push(card);
-        card.current_hand = this;
+    redrawCards : function() {
+        //TODO: Implement this with _.each()
+        $(this.card_container).empty();
+        for(var x=0;x<this.cards().length;x++) {
+            var c = this.cards()[x];
+            this.drawCard(c,x);
+        }
+    },
+
+    drawCard: function(card,idx) {
         var numCards = this.cards().length;
+        if (!_.isUndefined(idx))
+            numCards = idx;
         var left = this.stackFactor()[0] * numCards;
         var top = this.stackFactor()[1] * numCards;
 
@@ -232,6 +257,12 @@ var Hand = JS.Class({
         node.style.top = top + "em";
 
         this.card_container.appendChild(node);
+    },
+
+    add:function (card) {
+        this.cards.push(card);
+        card.current_hand = this;
+        this.drawCard(card);
     },
 
     isEmpty: function() {

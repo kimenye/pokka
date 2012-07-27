@@ -168,6 +168,7 @@ var Player = JS.Class({
                         self.hand().removeCard(_best_move);
                     }
                 }
+                self.hand().redrawCards();
 
                 this.game.finishTurn(this);
             }
