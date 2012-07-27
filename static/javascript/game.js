@@ -5,16 +5,31 @@ var Turn = JS.Class({
     }
 });
 
+var Action = JS.Class({
+    construct: function(idx,text) {
+        this.idx = idx;
+        this.text = text;
+    }
+});
+
 var Game = JS.Class({
     //TODO: need to implement multi player...
     construct: function(user_player, computer_player, board, deck) {
         var self = this;
-        this.user = user_player;
-        this.computer = computer_player;
+        this.user = ko.observable(user_player);
+        this.computer = ko.observable(computer_player);
         this.board = board;
         this.deck = deck;
-        this.user.initGame(this);
-        this.computer.initGame(this);
+        this.user().initGame(this);
+        this.computer().initGame(this);
+        this.logs = ko.observableArray();
+
+        this.currentTurn = ko.computed(function() {
+            var _turn = _.find([self.user(), self.computer()], function(player) {
+                return player.isTurnToPlay()
+            });
+            return _turn;
+        });
 
         this.whoseTurn = ko.computed(function() {
             var _turn = self.currentTurn()
@@ -25,27 +40,25 @@ var Game = JS.Class({
                 return "GAME NOT STARTED"
         });
     },
-
-    currentTurn : function() {
-        var _turn = _.find([this.user, this.computer], function(player) {
-            return player.isTurnToPlay()
-        });
-        return _turn;
-    },
-
     startGame: function(debug) {
         //randomly pick which user gets to start
         //TODO: implement correct coin toss
         //TODO: for now make the computer start coz it needs to be trained based on the debug property
         if (debug) {
-            this.giveTurnTo(this.computer, this.user);
+            this.log("Game started with the computers turn");
+            this.giveTurnTo(this.computer(), this.user());
         } else {
             var playerWinsToss = Math.floor( Math.random() * 2 ) == 1;
+            this.log("Game started with " + (playerWinsToss? " user's" : " computer's") + " turn");
             if (playerWinsToss)
-                this.giveTurnTo(this.user, this.computer);
+                this.giveTurnTo(this.user(), this.computer());
             else
-                this.giveTurnTo(this.computer, this.user);
+                this.giveTurnTo(this.computer(), this.user());
         }
+    },
+
+    log : function(text) {
+        this.logs.push(new Action(this.logs().length, text));
     },
 
     giveTurnTo: function(player, other) {
@@ -56,10 +69,10 @@ var Game = JS.Class({
     finishTurn : function(player) {
         //TODO: Handle multiplayer
         if (this.currentTurn().isBot())  {
-            this.giveTurnTo(this.user,this.computer);
+            this.giveTurnTo(this.user(),this.computer());
         }
         else
-            this.giveTurnTo(this.computer, this.user);
+            this.giveTurnTo(this.computer(), this.user());
     }
 });
 
@@ -115,12 +128,13 @@ var Player = JS.Class({
         this.board = null;
         this.game = null;
         this.deck = null;
+        this.isAutomated = false;
         this.isBot = function() {
             return this.type == COMPUTER;
         }
 
         this.isTurnToPlay.subscribe(function(nevValue) {
-            if (nevValue == true) {
+            if (nevValue == true && self.isAutomated) {
                 this.play();
             }
         }, this);

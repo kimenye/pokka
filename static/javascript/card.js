@@ -118,9 +118,9 @@ var Hand = JS.Class({
     construct:function (type) {
         this.cards = ko.observableArray([]);
         var self = this;
-//TODO: Temporarily showing the computers cards for debugging purposes
-        this.hidden = type != PLAYER;
-//        this.hidden = false;
+        //TODO: Temporarily showing the computers cards for debugging purposes
+//        this.hidden = type != PLAYER;
+        this.hidden = false;
 
         this.card_container = document.getElementById(type + "-deck");
 
@@ -558,18 +558,18 @@ var Deck = JS.Class({
         }
 
 
-        _.each(this.visibleCards, function (card, idx) {
-            //shuffle a card every 100 seconds
-            var duration = (idx) * 10;
-            setTimeout(function () {
-                $(card)
-                    .animate({left:15 + "%", marginTop:2 + "em"}, 500, "easeOutBack", function () {
-                        i--;
-                        $(this).css("z-index", i);
-                    })
-                    .animate({left:0 + "%", marginTop:0 + "em"}, 500, "easeOutBack");
-            }, duration);
-        });
+//        _.each(this.visibleCards, function (card, idx) {
+//            //shuffle a card every 100 seconds
+//            var duration = (idx) * 10;
+//            setTimeout(function () {
+//                $(card)
+//                    .animate({left:15 + "%", marginTop:2 + "em"}, 500, "easeOutBack", function () {
+//                        i--;
+//                        $(this).css("z-index", i);
+//                    })
+//                    .animate({left:0 + "%", marginTop:0 + "em"}, 500, "easeOutBack");
+//            }, duration);
+//        });
     },
 
     deal:function () {

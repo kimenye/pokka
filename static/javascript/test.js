@@ -163,12 +163,6 @@ describe("Utility rules", function() {
 
     });
 
-//    it("Should decompose array elements into all combinations of at least 2", function() {
-//        var arr = [1,2,3,4];
-//        var _bd = break_down(arr,2);
-//        debugArray(_bd);
-//    });
-
     it("Should return a stepped breakdown of an array", function() {
         var arr = [1,2,3,4];
         expect(step(arr,2).length).toBe(3);
@@ -236,7 +230,6 @@ describe("Move rules:", function() {
        hand = null;
     });
 
-
     it("No moves are possible if no cards can follow", function() {
         var starting_card = new Card(SUITE_DIAMONDS, 10);
 
@@ -300,7 +293,6 @@ describe("Move rules:", function() {
             expect(g.evaluate()).toBe(true);
         });
 
-
         it("Any non playable cards in a set makes the group invalid", function() {
             var g = new Group([
                 new Card(SUITE_CLUBS, QUEEN),
@@ -322,7 +314,6 @@ describe("Move rules:", function() {
 
         });
 
-
         it("A group requires at least 2 cards in a hand", function() {
             hand = buildHand([new Card(SUITE_CLUBS,3)]);
             expect(hand.groups().length).toBe(0);
@@ -337,7 +328,6 @@ describe("Move rules:", function() {
             ]);
             expect(hand.groups().length).toBe(0);
         });
-
 
         it("A group does not exist if no cards in a hand can be played together even if they can follow each other", function () {
             hand = buildHand([
@@ -371,7 +361,6 @@ describe("Move rules:", function() {
             expect(hand.groups(new Card(SUITE_SPADES, 6)).length).toBe(2);
             expect(hand.bestGroup(new Card(SUITE_SPADES, 6)).score()).toBe(3);
         });
-
     });
 });
 
@@ -401,12 +390,22 @@ describe("Game play mechanics:", function() {
         //TODO: How do you test random starting of game?
     });
 
-    it("A player cannot play when its not players turn", function() {
+    it("Logs the start of the game", function() {
+        expect(game.logs().length).toBe(0);
         game.startGame();
+        expect(game.logs().length).toBe(1);
+    });
+
+    it("A player cannot play when its not players turn", function() {
+        game.startGame(true);
         var isComputersTurn = computerPlayer.isTurnToPlay();
         var isPlayersTurn = userPlayer.isTurnToPlay();
 
         expect(isComputersTurn == isPlayersTurn).toBe(false);
+        expect(isComputersTurn).toBe(true);
+        expect(game.currentTurn()).toBe(computerPlayer);
+
+        expect(game.whoseTurn()).toBe("COMPUTER'S TURN TO PLAY");
     });
 
     it("When the game is started with debug its the computers turn to play", function() {

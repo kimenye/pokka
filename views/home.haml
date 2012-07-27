@@ -1,17 +1,3 @@
--##playground
--#  #deck
--#  #poker-table.poker-table
--#  #player1.cardArea
--#  #player2.cardArea
--#  #controls
--#    %button#shuffle Shuffle
--#    %button#players Players
--#    %button#shuffle Deal
--##board.hide
--#  %h1 Progress
--#  %ol{'data-bind' => 'foreach: messages'}
--#    %li{'data-bind' => 'text: txt'}
-
 .container
   .row.hide
     .hero-unit
@@ -39,6 +25,8 @@
     .span3
       .container
         .row
+          %button.btn.btn-success#btn-computer{'data-bind' => 'click: computerMove'} Computer Move
+        .row
           .avatar
             %img{'src' => '/images/avatars/FD03.png'}
           .computer
@@ -61,4 +49,12 @@
             %h4 Player 1
     .span6
       #player-deck
+  .row
+    .span12
+      %table.table.table-bordered
+        %thead
+          %th Moves
+        %tbody{'data-bind' => 'foreach: game().logs'}
+          %tr
+            %td{'data-bind' => 'text: text'}
 

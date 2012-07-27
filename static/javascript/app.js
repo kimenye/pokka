@@ -36,6 +36,12 @@ $(document).ready(function () {
             self.deck().shuffle();
         }
 
+        self.computerMove = function() {
+            if (self.computer.canPlay()) {
+                self.computer.play();
+            }
+        }
+
         self.move = function() {
             if (self.user.hasSelections()) {
 
@@ -43,7 +49,7 @@ $(document).ready(function () {
         }
 
         self.pick = function() {
-            self.user.pick(1);
+            self.user().pick(1);
         }
 
         self.deal = function() {
@@ -57,9 +63,11 @@ $(document).ready(function () {
             var starting_card = self.deck().cut();
             self.board().start(starting_card);
 
-//            self.game().startGame(true);
-            self.game().startGame();
+            self.game().startGame(true);
+//            self.game().startGame();
         }
     }
-    ko.applyBindings(new GameVM());
+    var vm = new GameVM()
+    ko.applyBindings(vm);
+    vm.startGame();
 });
