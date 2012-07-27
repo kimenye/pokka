@@ -45,6 +45,7 @@ $(document).ready(function () {
             if (this.user().hasSelections() &&
                 this.user().hand().canPlaySelections(this.board().topCard()) ) {
                 this.user().play();
+                this.computer.play();
             }
         }
 
@@ -64,6 +65,11 @@ $(document).ready(function () {
             self.board().start(starting_card);
 
             self.game().startGame(true);
+            setTimeout(function() {
+//                alert("Waited for five secs");
+                self.computer.play();
+            }, 1000);
+//            setTimeout(this.computer.play(), 5000);
 //            self.game().startGame();
         }
     }

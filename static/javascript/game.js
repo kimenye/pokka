@@ -152,7 +152,9 @@ var Player = JS.Class({
         this.play = function() {
             if(this.isBot() && this.hasCards()){
                 var _card = self.board.topCard();
+
                 if (!self.hand().canPlay(_card)) {
+                    console.log("Can't play with card ", _card.toString());
                     self.pick(1,true);
                 }
                 else {

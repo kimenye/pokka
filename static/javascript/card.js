@@ -119,8 +119,8 @@ var Hand = JS.Class({
         this.cards = ko.observableArray([]);
         var self = this;
         //TODO: Temporarily showing the computers cards for debugging purposes
-//        this.hidden = type != PLAYER;
-        this.hidden = false;
+        this.hidden = type != PLAYER;
+//        this.hidden = false;
 
         this.card_container = document.getElementById(type + "-deck");
 

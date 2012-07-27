@@ -201,6 +201,7 @@ describe("Utility rules", function() {
             num_possibilities += permute(a).length;
         });
 
+        console.log("P:",num_possibilities);
         expect(possible_combinations(arr,2).length).toBe(num_possibilities);
     });
 
