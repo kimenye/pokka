@@ -152,13 +152,11 @@ var Player = JS.Class({
         this.play = function() {
             if(this.isBot() && this.hasCards()){
                 var _card = self.board.topCard();
-
                 if (!self.hand().canPlay(_card)) {
                     console.log("Can't play with card ", _card.toString());
                     self.pick(1,true);
                 }
                 else {
-//                    Paul simon Love of the common people 1.09
                     var _best_group = self.hand().bestGroup(_card);
                     var _best_move = self.hand().bestSingleMove(_card);
                     if (_best_group != null) {

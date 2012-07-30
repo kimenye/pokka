@@ -50,7 +50,8 @@ $(document).ready(function () {
         }
 
         self.pick = function() {
-            self.user().pick(1);
+            this.user().pick(1);
+            this.computer.play();
         }
 
         self.deal = function() {
@@ -64,13 +65,11 @@ $(document).ready(function () {
             var starting_card = self.deck().cut();
             self.board().start(starting_card);
 
-            self.game().startGame(true);
-            setTimeout(function() {
-//                alert("Waited for five secs");
-                self.computer.play();
-            }, 1000);
-//            setTimeout(this.computer.play(), 5000);
-//            self.game().startGame();
+            self.game().startGame();
+            if (this.computer.isTurnToPlay())
+            {
+                this.computer.play();
+            }
         }
     }
     var vm = new GameVM()
