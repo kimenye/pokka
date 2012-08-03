@@ -325,6 +325,12 @@ var Card = JS.Class({
             }
         });
 
+        $(_cardNode).dblclick(function() {
+            if (me.selectable) {
+
+            }
+        })
+
         // Build the front of card.
 
         _spotChar = this.suite.symbolChar();
@@ -472,6 +478,14 @@ var Card = JS.Class({
         return this.rank == 8;
     },
 
+    isKing : function() {
+        return this.rank == KING;
+    },
+
+    isJack : function() {
+        return this.rank == JACK;
+    },
+
     canStart: function() {
         //TODO: This rules need to be downloaded from the server so that
         //there is collaboration in defining the rules
@@ -497,7 +511,9 @@ var Card = JS.Class({
         return can_follow;
     },
 
-
+    canEndMove: function() {
+       return !this.isQueen() && !this.isEight();
+    },
 
     /**
      * Can be joined with the card specified in a group
@@ -509,8 +525,10 @@ var Card = JS.Class({
         var _follow = this.canFollow(card);
         var _sameRank = this.rank == card.rank;
         var _sameSuite = this.suite == card.suite;
+//        var _jackOrKing = card.isKing() || card.isJack();
 
         if (this.isQueen() || this.isEight()) {
+//            return _follow && (_sameSuite || _sameRank) && !_jackOrKing;
             return _follow && (_sameSuite || _sameRank);
         }
         else

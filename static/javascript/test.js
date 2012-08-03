@@ -108,6 +108,17 @@ describe("Card rules:", function() {
         expect(five_d.canPlayTogetherWith(ace_d)).toBe(false);
     });
 
+    it("A queen cannot finish a move", function() {
+        var q_d = new Card(SUITE_DIAMONDS, QUEEN);
+        expect(q_d.canEndMove()).toBe(false);
+
+        var k_d = new Card(SUITE_DIAMONDS, KING);
+        expect(k_d.canEndMove()).toBe(true);
+
+        var e_d = new Card(SUITE_DIAMONDS, 8);
+        expect(e_d.canEndMove()).toBe(false);
+    });
+
     describe("Queen rules", function() {
 
         it("A queen can play together with another queen", function() {
@@ -566,6 +577,27 @@ describe("Game play mechanics:", function() {
         expect(hand.numSelected()).toBe(2);
         expect(hand.canPlaySelections(new Card(SUITE_HEARTS, 4))).toBe(false);
     });
+
+    describe("Queen Moves", function() {
+
+        it("When a play selects a queen and they dont have another card that can match it the have to pick a card", function() {
+            game.startGame(true);
+
+            board.start(new Card(SUITE_DIAMONDS, 9));
+
+            computerPlayer.give(new Card(SUITE_DIAMONDS,QUEEN));
+            computerPlayer.give(new Card(SUITE_HEARTS,5));
+
+            computerPlayer.isTurnToPlay(true);
+            computerPlayer.play();
+
+            expect(computerPlayer.numCards()).toBe(2);
+        });
+
+//        it("A move is not complete if ")
+//        it ("A ")
+    });
+
 });
 
 

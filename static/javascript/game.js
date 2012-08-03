@@ -143,31 +143,41 @@ var Player = JS.Class({
             this.game.log("Player " + this.name + " : " + text);
         },
 
+        /**
+         * Returns true or false if the move can be complete as is...
+         */
         this.move = function(card) {
             self.board.drawCard(card);
             self.hand().removeCard(card);
             self.log("Played card " + card.toString());
+
+            return card.canEndMove();
         }
 
         this.play = function() {
             if(this.isBot() && this.hasCards()){
                 var _card = self.board.topCard();
                 if (!self.hand().canPlay(_card)) {
-                    console.log("Can't play with card ", _card.toString());
+                    self.log("Can't play with card " + _card.toString());
                     self.pick(1,true);
                 }
                 else {
                     var _best_group = self.hand().bestGroup(_card);
                     var _best_move = self.hand().bestSingleMove(_card);
+                    var _finished = false;
                     if (_best_group != null) {
 
                         _.each(_best_group.cards, function(card) {
-                            self.move(card);
+                            _finished = self.move(card);
                         });
                     }
                     else if (_best_move != null)
                     {
-                        this.move(_best_move);
+                        _finished = this.move(_best_move);
+                    }
+
+                    if (!_finished) {
+                        self.pick(1,true);
                     }
                 }
                 self.hand().redrawCards();
@@ -175,10 +185,16 @@ var Player = JS.Class({
                 this.game.finishTurn(this);
             }
             else {
+                var _finished = false;
                 _.each(this.hand().getSelectedCards(), function(card) {
-                    this.move(card);
-                    this.game.finishTurn(this);
+                    _finished = this.move(card);
                 },this);
+
+                if (!_finished) {
+                    self.pick(1,true);
+                }
+                this.game.finishTurn(this);
+
                 this.hand().redrawCards();
             }
         };
