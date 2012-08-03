@@ -10,7 +10,7 @@
         .span2
           %button.btn.btn-large#start{'data-bind' => 'click: startGame, disable: inProgress '} Start Game
         .span2
-          %button.btn.btn-large#restart{'data-bind' => 'click: restartGame, enable: inProgress '} Restart Game
+          %button.btn.btn-large#restart{'data-bind' => 'click: restartGame, enable: false '} Restart Game
         .span3.offset1
           %h6{'data-bind' => 'text: game().whoseTurn'}
       -#%button.btn.btn-large#shuffle{'data-bind' => 'click: shuffle'} Shuffle

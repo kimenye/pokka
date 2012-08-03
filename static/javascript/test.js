@@ -402,6 +402,21 @@ describe("Game play mechanics:", function() {
         //TODO: How do you test random starting of game?
     });
 
+    it("When a hand is reset all the cards are moved", function() {
+        var hand = buildHand([
+            new Card(SUITE_SPADES, 4),
+            new Card(SUITE_CLUBS, 4),
+            new Card(SUITE_HEARTS, 3),
+            new Card(SUITE_SPADES, 5)
+        ]);
+        hand.reset();
+        expect(hand.isEmpty()).toBe(true);
+    });
+
+    it("When a game is restarted, everything is reset to the beginning", function() {
+       game.startGame();
+    });
+
     it("Logs the start of the game", function() {
         expect(game.logs().length).toBe(0);
         game.startGame();

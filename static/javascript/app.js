@@ -5,29 +5,25 @@ $(document).ready(function () {
         var self = this;
 
         self.deck = ko.observable(null);
-        self.initGame = function() {
-            self.computer = new ComputerPlayer();
-            self.user = ko.observable(new UserPlayer("Player 1"));
-            self.inProgress = ko.observable(false);
-            self.board = ko.observable(new Board());
-            if (self.deck() == null) {
-                self.deck(new Deck());
-                self.deck().display();
-            }
-
-            self.game = ko.observable(new Game(self.user(), self.computer, self.board(), self.deck()));
-
-            self.playerCanMove = ko.computed(function() {
-                var hasSelections = self.user().hasSelections();
-                return hasSelections && self.playerCanPlay();
-            });
-
-            self.playerCanPlay = ko.computed(function() {
-                return self.user().isTurnToPlay();
-            });
+        self.computer = new ComputerPlayer();
+        self.user = ko.observable(new UserPlayer("Player 1"));
+        self.inProgress = ko.observable(false);
+        self.board = ko.observable(new Board());
+        if (self.deck() == null) {
+            self.deck(new Deck());
+            self.deck().display();
         }
 
-        self.initGame();
+        self.game = ko.observable(new Game(self.user(), self.computer, self.board(), self.deck()));
+
+        self.playerCanMove = ko.computed(function() {
+            var hasSelections = self.user().hasSelections();
+            return hasSelections && self.playerCanPlay();
+        });
+
+        self.playerCanPlay = ko.computed(function() {
+           return self.user().isTurnToPlay();
+        });
 
         self.startGame = function() {
             self.shuffle();
@@ -36,7 +32,6 @@ $(document).ready(function () {
         }
 
         self.restartGame = function() {
-            self.initGame();
             self.startGame();
         }
 

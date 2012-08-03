@@ -137,6 +137,11 @@ var Hand = JS.Class({
         })
     },
 
+    reset: function() {
+        this.cards([]);
+        this.redrawCards();
+    },
+
     /**
      * Different factors for players and computers, so that the cards are stacked closer for
      * the non-players
