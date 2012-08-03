@@ -26,17 +26,12 @@ $(document).ready(function () {
         });
 
         self.startGame = function() {
-            self.shuffle();
             self.deal();
             self.inProgress(true);
         }
 
         self.restartGame = function() {
             self.startGame();
-        }
-
-        self.shuffle = function() {
-            self.deck().shuffle();
         }
 
         self.computerMove = function() {
@@ -59,17 +54,7 @@ $(document).ready(function () {
         }
 
         self.deal = function() {
-            _.each(_.range(0, 4), function (idx) {
-                var player_card = self.deck().deal();
-                var computer_card = self.deck().deal();
-                self.user().give(player_card);
-                self.computer.give(computer_card);
-            });
-
-            var starting_card = self.deck().cut();
-            self.board().start(starting_card);
-
-            self.game().startGame();
+            var starting_card = self.game().startGame();
             if (this.computer.isTurnToPlay())
             {
                 this.computer.play();

@@ -417,6 +417,17 @@ describe("Game play mechanics:", function() {
        game.startGame();
     });
 
+    it("At the beginning of the game all the players are dealt 4 cards each", function() {
+       game.startGame();
+       expect(userPlayer.numCards()).toBe(4);
+    });
+
+    it("At the beginning of the game a valid card is placed on the board", function() {
+        game.startGame();
+        var opening_card = board.topCard();
+        expect(opening_card == null).toBe(false);
+    });
+
     it("Logs the start of the game", function() {
         expect(game.logs().length).toBe(0);
         game.startGame();
@@ -493,7 +504,7 @@ describe("Game play mechanics:", function() {
     });
 
     it("When a player picks a card there is one less card in the deck and the players cards increase", function() {
-       game.startGame();
+        game.startGame(true);
 
         userPlayer.isTurnToPlay(true);
         userPlayer.give(new Card(SUITE_SPADES, 8));
@@ -608,9 +619,6 @@ describe("Game play mechanics:", function() {
 
             expect(computerPlayer.numCards()).toBe(2);
         });
-
-//        it("A move is not complete if ")
-//        it ("A ")
     });
 
 });

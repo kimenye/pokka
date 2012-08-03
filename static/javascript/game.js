@@ -40,7 +40,21 @@ var Game = JS.Class({
                 return "GAME NOT STARTED"
         });
     },
+
+    deal: function() {
+        _.each(_.range(0, 4), function (idx) {
+            var player_card = this.deck.deal();
+            var computer_card = this.deck.deal();
+            this.user().give(player_card);
+            this.computer().give(computer_card);
+        }, this);
+    },
+
     startGame: function(debug) {
+        this.deck.shuffle();
+        if (!debug)
+            this.deal();
+
         //randomly pick which user gets to start
         //TODO: implement correct coin toss
         //TODO: for now make the computer start coz it needs to be trained based on the debug property
@@ -55,6 +69,10 @@ var Game = JS.Class({
             else
                 this.giveTurnTo(this.computer(), this.user());
         }
+
+        var starting_card = this.deck.cut();
+        this.board.start(starting_card)
+        return starting_card;
     },
 
     log : function(text) {
