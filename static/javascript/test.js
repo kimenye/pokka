@@ -45,6 +45,23 @@ describe("Card rules:", function() {
        expect(deck.cards.length).toBe(54);
     });
 
+    it("A specific card can be found in a deck", function() {
+//        expect(deck.findCard(new Card(SUITE_CLUBS, 2))).toBe(new Ca);
+        var _c = new Card(SUITE_CLUBS, 2);
+        var _card = deck.findCard(_c);
+
+        expect(_card.eq(_c)).toBe(true);
+    });
+
+    it("When a specific card is removed from the deck it can no longer be found", function() {
+
+        var _c = new Card(SUITE_CLUBS,2);
+        expect(deck.cards.length).toEqual(54);
+
+        var _card = deck.removeCard(_c);
+        expect(deck.cards.length).toEqual(53);
+    });
+
     it("A card can be removed from a hand", function() {
         var hand = buildHand([
             new Card(SUITE_CLUBS,4),
@@ -426,6 +443,12 @@ describe("Game play mechanics:", function() {
         game.startGame();
         var opening_card = board.topCard();
         expect(opening_card == null).toBe(false);
+        expect(opening_card.canStart()).toBe(true);
+    });
+
+    it("At all times the total number of cards in play should equal 24", function() {
+        game.startGame();
+        expect(deck.cards.length)
     });
 
     it("Logs the start of the game", function() {

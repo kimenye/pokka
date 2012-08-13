@@ -11,7 +11,7 @@ $(document).ready(function () {
         self.board = ko.observable(new Board());
         if (self.deck() == null) {
             self.deck(new Deck());
-            self.deck().display();
+            self.deck().display("deck");
         }
 
         self.game = ko.observable(new Game(self.user(), self.computer, self.board(), self.deck()));
